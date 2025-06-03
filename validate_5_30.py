@@ -9,9 +9,11 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 import time
 import json
 import math
+from concurrent.futures import ThreadPoolExecutor
+from tqdm import tqdm
 
 import App_Resumption_Ads
-from utils import client, send_request
+from utils import upload_file, send_request, get_client, dump_upload_files
 
 
 # Define a function that the model can call to control smart lights
@@ -208,7 +210,7 @@ def unavailable_str(element):
     else:
         return False
 
-for uid in unique_ids[:40]:
+for uid in unique_ids[:5]:
     # 找出这个序号对应的所有行
     group = gt_df[gt_df['appid'] == uid]
 
@@ -283,50 +285,24 @@ for uid in unique_ids[:40]:
         ground_truth[uid] = app_gt
 
 result_dict = {}
-
 y_true, y_pred = [], []
-
-upload_videos_file = "upload_videos.json"
-if os.path.exists(upload_videos_file):
-    with open(upload_videos_file, "r") as f:
-        upload_videos = json.load(f)
-else:
-    upload_videos = {}
 
 for key, app_gt in ground_truth.items():
     # if app_gt["App Resumption Ads"] == False:
     #     continue
 
-    video_file = None
     local_path = app_gt["video"]
     result_dict[local_path] = {}
-    if local_path in upload_videos.keys():
-        cloud_name = upload_videos[local_path]["cloud_name"]
-        try:
-            cloud_file = client.files.get(name=cloud_name)
-            if cloud_file.state and cloud_file.state.name == "ACTIVE":
-                video_file = cloud_file
-            else:
-                upload_videos.pop(local_path)
-        except Exception as e:
-            upload_videos.pop(local_path)
 
-    if not video_file:
-        video_file = client.files.upload(file=local_path)
-        # Poll until the video file is completely processed (state becomes ACTIVE).
-        while not video_file.state or video_file.state.name != "ACTIVE":
-            # print("Processing video...")
-            # print("File state:", video_file.state)
-            time.sleep(5)
-            video_file = client.files.get(name=video_file.name)
-        upload_videos[local_path] = {"cloud_name": video_file.name}
-        with open(upload_videos_file, "w") as f:
-            json.dump(upload_videos, f, indent=4)
+    client = get_client()
+    video_file = upload_file(client, local_path)
 
     candidateCount = 5
     pred_vote = {x: 0 for x in index_map.values()}
     result_dict[local_path]["candidate"] = []
     for cand in range(candidateCount):
+        broken_client = True
+
         candidate = {}
         tools = types.Tool(function_declarations=[App_Resumption_Ads.Recheck_App_Resumption_Ads])
         config = types.GenerateContentConfig(
@@ -352,11 +328,15 @@ for key, app_gt in ground_truth.items():
 
         # Send request with function declarations
         response = send_request(
+            client=client,
             model="gemini-2.5-flash-preview-05-20",
             # contents=[video_file, prompt],
             contents=contents,
             config=config,
         )
+
+        if not response:
+            broken_client = True
 
         # finish_reason = response.candidates[0].finish_reason.name
         # if finish_reason in ['FINISH_REASON_UNSPECIFIED', 'STOP']:
@@ -370,8 +350,9 @@ for key, app_gt in ground_truth.items():
 
         max_calls = 4
         called = 0
+
         # Check for a function call
-        while response.function_calls:
+        while response and response.function_calls:
             # contents.append(response.candidates[0].content)
 
             function_calls = response.function_calls
@@ -383,7 +364,9 @@ for key, app_gt in ground_truth.items():
                 func_result = "The function call result is temporarily unavailable."
                 if function_call.name == "Recheck_App_Resumption_Ads":
                     new_args = App_Resumption_Ads.get_earlier_latter(local_path, **function_call.args)
-                    func_result = App_Resumption_Ads.Actual_Function_Recheck_App_Resumption_Ads(video=video_file, **new_args)
+                    call_result = App_Resumption_Ads.Actual_Function_Recheck_App_Resumption_Ads(client=client, video=video_file, **new_args)
+                    if call_result:
+                        func_result = call_result
 
                 candidate["function_call"].append({"name": function_call.name, "args": function_call.args, "response": func_result})
 
@@ -405,11 +388,17 @@ for key, app_gt in ground_truth.items():
                 function_call_config = config
 
             response = send_request(
+                client=client,
                 model="gemini-2.5-flash-preview-05-20",
                 # contents=[video_file, prompt],
                 contents=contents,
                 config=function_call_config,
             )
+            if not response:
+                broken_client = True
+
+        if not response:
+            continue
 
         print("Here is the response:")
         print(response.text)
@@ -442,11 +431,14 @@ for key, app_gt in ground_truth.items():
             print('格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...')
 
             extract_response = send_request(
+                client=client,
                 model="gemini-2.5-flash-preview-05-20",
                 config=types.GenerateContentConfig(
                     system_instruction=prompt_for_extract_result),
                 contents=result,
             )
+            if not extract_response:
+                continue
 
             extract_result = extract_response.text
             print("Here is the extracted result from original result:")
@@ -566,8 +558,7 @@ print(f"Average Recall:    {recall_macro:.3f}")
 print(f"Average F1-score:  {f1_macro:.3f}")
 result_dict["all_average_metrics"]["macro"] = {'Precision': precision_macro, 'Recall': recall_macro, 'F1-score': f1_macro}
 
-with open(upload_videos_file, "w") as f:
-    json.dump(upload_videos, f, indent=4)
+dump_upload_files()
 
 result_file = "result.json"
 with open(result_file, "w") as f:

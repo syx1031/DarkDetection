@@ -4,7 +4,7 @@ import time
 from moviepy import VideoFileClip
 
 import utils
-from utils import client, send_request
+from utils import send_request
 
 
 # Define a function that the model can call to control smart lights
@@ -66,7 +66,7 @@ def get_earlier_latter(local_path, start_time, end_time):
 
 
 # This is the actual function that would be called based on the model's suggestion
-def Actual_Function_Recheck_App_Resumption_Ads(video: types.File, earlier: str, start_time: str, end_time: str, latter: str, fps: int) -> str:
+def Actual_Function_Recheck_App_Resumption_Ads(client: genai.client, video: types.File, earlier: str, start_time: str, end_time: str, latter: str, fps: int) -> str:
     start_offset = str(utils.time_to_seconds(earlier)) + 's'
     end_offset = str(utils.time_to_seconds(latter)) + 's'
     fps = min(24, fps)
@@ -93,11 +93,15 @@ def Actual_Function_Recheck_App_Resumption_Ads(video: types.File, earlier: str, 
     )
 
     response = send_request(
+        client=client,
         model="gemini-2.5-flash-preview-05-20",
         # model="gemini-2.0-flash",
         contents=content,
         config=config,
     )
+
+    if not response:
+        return None
 
     return response.text
 

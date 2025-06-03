@@ -3,68 +3,8 @@ from google import genai
 import time
 import random
 import threading
-
-
-# Configure the client and tools
-FREE_API_KEYS = [
-genai.Client(api_key="AIzaSyBWdjtqfv8QMBpqaI7smQAArpL_I5dJAsU"),
-genai.Client(api_key="AIzaSyAr4kAGPP3V9MEjbFddzBU1JO6WZ7xNVGw"),
-genai.Client(api_key="AIzaSyAfL3fHwxU0m_azmGxD6EERN1hn-s2_BOI"),
-genai.Client(api_key="AIzaSyDaYTs-CA65NcLt8T840Xhm8107xq3XRqM"),
-genai.Client(api_key="AIzaSyDbZy4YSTor8_ej3j3lAtJ7-nDMURAHafE"),
-genai.Client(api_key="AIzaSyAb8rKNNGEIxWO9zFCKKoKaxp7gHnuIFXQ"),
-genai.Client(api_key="AIzaSyD7_zs0cjXvfa2BMNYlm-_Cyz0-cSmdc18"),
-genai.Client(api_key="AIzaSyCWXJtKakyNvSETWZyq_0KKk2LbxL7S5yw"),
-genai.Client(api_key="AIzaSyAWUS0RPKsdFTAwsKJFrV1AiiCB5ML3SQ8"),
-genai.Client(api_key="AIzaSyB4w4chjyM8Pn81DmC-eLjMWgw3zttb8sY"),
-genai.Client(api_key="AIzaSyD22lWTZq6SPGgeQicUYic8G1oukNnntxo"),
-]
-
-PAID_API_KEY = [
-genai.Client(api_key="AIzaSyDNYdjTbR2MYpnkOE6I2L8SrkBK4be2ndg")
-]
-
-# 状态缓存
-api_status = {key: True for key in FREE_API_KEYS}
-
-# 锁用于保护对 api_status 的并发访问
-status_lock = threading.Lock()
-
-# 恢复定时器管理（防止多个定时器重复设定）
-recovery_timers = {}
-
-
-def get_client():
-    """获取一个可用的 API key，如果免费都不可用，则返回付费 key"""
-    available_free_keys = [key for key in FREE_API_KEYS if api_status.get(key, True)]
-
-    if available_free_keys:
-        return random.choice(available_free_keys)
-    else:
-        return PAID_API_KEY
-
-
-def feedback(api_key):
-    """标记某个 key 为不可用，并设置 2 分钟后恢复"""
-    if api_key in FREE_API_KEYS:
-        with status_lock:
-            api_status[api_key] = False
-            print(f"[{time.strftime('%H:%M:%S')}] API {api_key} marked as over quota.")
-
-        # 如果已有恢复定时器在运行就不重复设置
-        if api_key in recovery_timers and recovery_timers[api_key].is_alive():
-            return
-
-        def restore_key():
-            with status_lock:
-                api_status[api_key] = True
-                print(f"[{time.strftime('%H:%M:%S')}] API {api_key} is now restored.")
-
-        timer = threading.Timer(120, restore_key)
-        recovery_timers[api_key] = timer
-        timer.start()
-    else:
-        print('Paid api may be over quota.')
+import os
+import json
 
 
 def time_to_seconds(time_str):
@@ -87,12 +27,119 @@ def seconds_to_mmss(seconds):
     return f"{int(minutes):02d}:{int(seconds):02d}"
 
 
-def send_request(model, contents, config):
+FREE_KEYS = [
+    "AIzaSyBWdjtqfv8QMBpqaI7smQAArpL_I5dJAsU",
+    "AIzaSyAr4kAGPP3V9MEjbFddzBU1JO6WZ7xNVGw",
+    "AIzaSyAfL3fHwxU0m_azmGxD6EERN1hn-s2_BOI",
+    "AIzaSyDaYTs-CA65NcLt8T840Xhm8107xq3XRqM",
+    "AIzaSyDbZy4YSTor8_ej3j3lAtJ7-nDMURAHafE",
+    "AIzaSyAb8rKNNGEIxWO9zFCKKoKaxp7gHnuIFXQ",
+    "AIzaSyD7_zs0cjXvfa2BMNYlm-_Cyz0-cSmdc18",
+    "AIzaSyCWXJtKakyNvSETWZyq_0KKk2LbxL7S5yw",
+    "AIzaSyAWUS0RPKsdFTAwsKJFrV1AiiCB5ML3SQ8",
+    "AIzaSyB4w4chjyM8Pn81DmC-eLjMWgw3zttb8sY",
+    "AIzaSyD22lWTZq6SPGgeQicUYic8G1oukNnntxo",
+]
+PAID_KEYS = [
+    "AIzaSyDNYdjTbR2MYpnkOE6I2L8SrkBK4be2ndg"
+]
+
+# Configure the client and tools
+FREE_API_KEYS = {key: {'client': genai.Client(api_key=key), 'status': True, 'uploads': {}, 'timer': None, 'lock': threading.Lock()} for key in FREE_KEYS}
+PAID_API_KEYS = {key: {'client': genai.Client(api_key=key), 'status': True, 'uploads': {}, 'timer': None, 'lock': threading.Lock()} for key in PAID_KEYS}
+ALL_API_KEYS = FREE_API_KEYS | PAID_API_KEYS
+
+STATUS_LOCK = threading.Lock()
+
+for key in ALL_API_KEYS.keys():
+    upload_videos_file = f"UploadVideos/{key}.json"
+    if os.path.exists(upload_videos_file):
+        with open(upload_videos_file, "r") as f:
+            ALL_API_KEYS[key]['uploads'] = json.load(f)
+
+
+def get_client():
+    with STATUS_LOCK:
+        """获取一个可用的 API key，如果免费都不可用，则返回付费 key"""
+        available_free_apis = [api['client'] for api in FREE_API_KEYS.values() if api['status']]
+        available_paid_apis = [api['client'] for api in PAID_API_KEYS.values()]
+
+        if available_free_apis:
+            return random.choice(available_free_apis)
+        else:
+            return random.choice(available_paid_apis)
+
+
+def get_key_from_client(client):
+    for key, value in ALL_API_KEYS.items():
+        if client is value['client']:
+            return key
+
+
+def upload_file(client, local_path):
+    key = get_key_from_client(client)
+    with STATUS_LOCK:
+        upload_videos = ALL_API_KEYS[key]['uploads']
+        video_file = None
+
+        if local_path in upload_videos.keys():
+            cloud_name = upload_videos[local_path]["cloud_name"]
+            try:
+                cloud_file = client.files.get(name=cloud_name)
+                if cloud_file.state and cloud_file.state.name == "ACTIVE":
+                    video_file = cloud_file
+                else:
+                    upload_videos.pop(local_path)
+            except Exception as e:
+                upload_videos.pop(local_path)
+
+        if not video_file:
+            video_file = client.files.upload(file=local_path)
+            upload_videos[local_path] = {"cloud_name": video_file.name}
+            upload_videos_file = f"UploadVideos/{key}.json"
+            with open(upload_videos_file, "w") as f:
+                json.dump(upload_videos, f, indent=4)
+
+    # Poll until the video file is completely processed (state becomes ACTIVE).
+    while not video_file.state or video_file.state.name != "ACTIVE":
+        # print("Processing video...")
+        # print("File state:", video_file.state)
+        time.sleep(5)
+        video_file = client.files.get(name=video_file.name)
+
+    return video_file
+
+
+def restore_key(key):
+    with STATUS_LOCK:
+        FREE_API_KEYS[key]['status'] = True
+        print(f"[{time.strftime('%H:%M:%S')}] API {key} is now restored.")
+
+
+def feedback(key):
+    with STATUS_LOCK:
+        """标记某个 key 为不可用，并设置 10 分钟后恢复"""
+        if key in FREE_KEYS:
+            FREE_API_KEYS[key]["status"] = False
+            print(f"[{time.strftime('%H:%M:%S')}] API {key} marked as over quota.")
+
+            # 如果已有恢复定时器在运行就不重复设置
+            if FREE_API_KEYS[key]['timer'].is_alive():
+                return
+
+            timer = threading.Timer(90000, restore_key, args=[key])
+            FREE_API_KEYS[key][timer] = timer
+            timer.start()
+        else:
+            print('Paid api may be over quota.')
+
+
+def send_request(client, model, contents, config):
+    try_counter = 0
     while True:
-        client_now = get_client()
         try:
             # Send request with function declarations
-            response = client_now.models.generate_content(
+            response = client.models.generate_content(
                 model=model,
                 contents=contents,
                 config=config,
@@ -100,6 +147,18 @@ def send_request(model, contents, config):
             break
         except Exception as e:
             print('Request failed, try to use another key.')
-            feedback(client_now)
+            try_counter += 1
+            if try_counter >= 10:
+                feedback(get_key_from_client(client))
+                return None
+            time.sleep(120)
 
     return response
+
+
+def dump_upload_files():
+    with STATUS_LOCK:
+        for key in ALL_API_KEYS.keys():
+            upload_videos_file = f"UploadVideos/{key}.json"
+            with open(upload_videos_file, "w") as f:
+                json.dump(ALL_API_KEYS[key]['uploads'], f, indent=4)
