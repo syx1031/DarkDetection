@@ -1,0 +1,1313 @@
+E:\DarkDetection\Gemini2.5Pro\venv\Scripts\python.exe E:\DarkDetection\Gemini2.5Pro\validate.py 
+Ground truth for video E:\DarkDetection\dataset\syx\us\1479305181-尚宇轩.mp4:
+B G C H I 
+
+模型输出正常结束
+Here is the response:
+B G H O
+Precision: 0.750
+Recall:    0.600
+F1-score:  0.667
+Ground truth for video E:\DarkDetection\dataset\syx\us\6450351607-尚宇轩.MP4:
+F G C H I 
+
+模型输出正常结束
+Here is the response:
+The following ad dark patterns are present:
+*   **A. App Resumption Ads**:
+    *   At 00:24, the interactive ad for "Playdoku" appears immediately after the user returns to the app from the Home Screen.
+    *   At 04:49, another interactive ad (similar to the previous one, but with a different image) appears immediately after the user returns to the app from the Home Screen.
+*   **C. Auto-Redirect Ads**:
+    *   At 01:28, after the interactive ad concludes, the user is automatically redirected to the App Store page for "Playdoku" without any user interaction.
+    *   At 04:36, after the interactive ad concludes, the user is automatically redirected to the App Store page for "Playdoku" without any user interaction.
+*   **F. Paid Ad Removal**:
+    *   At 01:49, the app presents an option to "Remove all pop-up ads" for $9.99, requiring a payment.
+*   **G. Reward-Based Ads**:
+    *   At 00:19, the user clicks "GET FREE +5" (hearts) with a play icon, indicating watching an ad for a reward.
+    *   At 02:19, when starting Level 1, there's a "FREE GIFT" button with a play icon, implying watching an ad for a reward.
+    *   At 03:33, after completing Level 1, there's a "Claim 150" button with a play icon, implying watching an ad for a higher reward.
+    *   At 04:55, when starting Level 2, there's a "FREE GIFT" button with a play icon, implying watching an ad for a reward.
+*   **I. Ad Closure Failure**:
+    *   At 01:27, clicking the 'X' close button on the interactive ad redirects the user to the App Store (01:28), instead of closing the ad and returning to the game directly.
+    *   At 04:35, clicking the 'X' close button on the interactive ad redirects the user to the App Store (04:36), instead of closing the ad and returning to the game directly.
+*   **N. Bias-Driven UI Ads**:
+    *   At 01:43, a pop-up ad for "Playdoku: Block Sudoku Puzzle" appears. It presents a "GET" button (favoring the advertiser) which is prominently placed and visually emphasized compared to the small 'X' close button (favoring the user) in the corner.
+    *   At 04:50, a similar pop-up ad appears, exhibiting the same visual bias with a prominent "GET" button and a less noticeable 'X' close button.
+
+A C F G I N
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+A C F G I N
+Precision: 0.667
+Recall:    0.800
+F1-score:  0.727
+Ground truth for video E:\DarkDetection\dataset\syx\us\6459478478-尚宇轩.MP4:
+B F G H I M O 
+
+模型输出正常结束
+Here is the response:
+A B D E F G H I M N O
+Precision: 0.700
+Recall:    1.000
+F1-score:  0.824
+Ground truth for video E:\DarkDetection\dataset\syx\us\6447461923-尚宇轩.mp4:
+F G C H I 
+
+模型输出正常结束
+Here is the response:
+B C F G H I N
+Precision: 0.714
+Recall:    1.000
+F1-score:  0.833
+Ground truth for video E:\DarkDetection\dataset\syx\us\483922001-尚宇轩.mp4:
+H 
+
+模型输出正常结束
+Here is the response:
+H L
+Precision: 0.500
+Recall:    1.000
+F1-score:  0.667
+Ground truth for video E:\DarkDetection\dataset\syx\us\673014145-尚宇轩.mp4:
+F 
+
+模型输出正常结束
+Here is the response:
+Upon reviewing the video, the following conclusions are drawn:
+
+**Step I: Identify all ads in the video**
+*   **QI.1 At what time did advertisements appear?**
+    Based on the definition provided ("(2) The interface for paid ad removal is part of the app’s functional UI and does not count as this type of dark pattern."), there are no traditional advertisements displayed in the video. The pop-ups and sections discussing "Premium Caller ID Pro Edition" (e.g., 00:01-00:07, 00:23-00:30, 00:43-00:49, 03:43-03:48) are part of the app's monetization strategy to offer ad removal and additional features for a fee, and are therefore considered functional UI, not ads. The app rating prompt (01:37-01:38) is also not an ad.
+*   **QI.2 Reconsider the ad time intervals...**
+    As no advertisements were identified, this step is not applicable.
+
+**Step II: Check the following dark patterns in the entire video**
+*   **1. (Corresponding to "A. App Resumption Ads"):**
+    *   Q1: Yes, the user returned to the Home screen and then back to the app (e.g., 03:11-03:13, 04:26-04:30).
+    *   Q2: No, after returning to the app, no advertisement appeared. The app resumed its normal functional screen.
+    *   Decision: "A. App Resumption Ads" is not present.
+
+*   **2. (Corresponding to "B. Unexpected Full-Screen Ads"):**
+    *   Decision: Not applicable as no ads were identified. "B. Unexpected Full-Screen Ads" is not present.
+
+*   **3. At what time did the app offer the ad-free service? What does the user need to give or do in order to obtain this service?**
+    *   The app offers "Premium Caller ID Pro Edition" which explicitly mentions "Removes Monthly Search Quota Limits and Ads". This offer is presented on the initial screen (e.g., 00:01-00:07) and also as a pop-up after a lookup attempt (00:23-00:30, 00:43-00:49, 03:43-03:48).
+    *   To obtain this service, the user needs to pay $9.49/month after a 3-day free trial, as indicated in the subscription prompts.
+    *   Q1: (Corresponding to "E. Barter for Ad-Free Privilege") No, the user is not required to watch ads, rate the app, or perform any action other than making a payment to remove ads.
+    *   Q2: (Corresponding to "F. Paid Ad Removal") Yes, the user is required to make a payment ($9.49/month) to remove ads.
+    *   Decision: "F. Paid Ad Removal" is present.
+
+*   **4. (Corresponding to "G. Reward-Based Ads"):**
+    *   Q1: No, the app does not contain any buttons indicating that watching an ad would provide a reward.
+    *   Q2: Not applicable.
+    *   Decision: "G. Reward-Based Ads" is not present.
+
+*   **5. (Corresponding to "J. Increased Ads with Use"):**
+    *   Q1: Yes, the app was closed and reopened multiple times (e.g., 03:11, 04:26).
+    *   Q2: No, the app did not display any ads during the first or subsequent launches; only the subscription offer was shown.
+    *   Q3: No, no UIs displayed ads in either run.
+    *   Q4: No, the overall ad volume did not increase as no ads were displayed.
+    *   Decision: "J. Increased Ads with Use" is not present.
+
+**Step III: Check the following dark patterns in every ads you listed in QI.2 one by one**
+*   Decision: Not applicable as no advertisements were identified. Therefore, "C. Auto-Redirect Ads", "H. Ad Without Exit Options", "I. Ad Closure Failure", "K. Gesture-Induced Ad Redirection", "L. Button-Covering Ads", "M. Multiple Close Buttons", "N. Bias-Driven UI Ads", and "O. Disguised Ads" are not present.
+
+**Final List of Dark Patterns:**
+F
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+F
+Precision: 1.000
+Recall:    1.000
+F1-score:  1.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\1574455218-尚宇轩.mp4:
+B C H I 
+
+模型输出正常结束
+Here is the response:
+A B C I M
+Precision: 0.600
+Recall:    0.750
+F1-score:  0.667
+Ground truth for video E:\DarkDetection\dataset\syx\us\6463493974-尚宇轩.mp4:
+F G H I 
+
+模型输出正常结束
+Here is the response:
+The following ad dark patterns are present in the video:
+*   **F. Paid Ad Removal**: At 00:51, the app offers "REMOVE ADS" for $3.99 and "NO ADS PACK" for $5.99, allowing users to remove non-optional ads through payment.
+*   **G. Reward-Based Ads**:
+    *   At 01:11, the app presents "FREE GEMS" and "FREE COINS" buttons explicitly labeled with an "AD" icon, indicating that watching an advertisement will grant 15 Gems or 500 Coins respectively.
+    *   At 01:58, the "SKIP" buttons next to quest rewards feature an "AD" icon, implying that users can watch an ad to skip a quest and receive the associated reward (150 coins or 10 gems).
+    *   At 04:21, an "AD 3 left" icon is displayed in the shop, suggesting that users can watch ads to obtain additional items.
+*   **C. Auto-Redirect Ads**:
+    *   At 01:44, the video ad automatically transitions to the App Store page for "Dynasty Legends 2" without any user interaction.
+    *   At 03:40, the video ad automatically transitions to the App Store page for the basketball game without any user interaction.
+*   **H. Ad Without Exit Options**: The first ad (01:16-01:44) displays a close button at 01:21, which is 5 seconds after the ad begins.
+
+The final output is **C F G H**
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+C F G H
+Precision: 0.750
+Recall:    0.750
+F1-score:  0.750
+Ground truth for video E:\DarkDetection\dataset\syx\us\6453159988-尚宇轩.MP4:
+F G H I 
+
+模型输出正常结束
+Here is the response:
+The following ad dark patterns are present in the video:
+
+*   **B. Unexpected Full-Screen Ads**: At 01:02, a full-screen interactive ad for "Travel Town" appears immediately after the user clicks the "Next" button at 01:00, which is a normal functional button within the app.
+*   **C. Auto-Redirect Ads**: At 01:53, after the interactive ad concludes, it automatically redirects to the "Travel Town - Merge Adventure" App Store landing page without any user interaction.
+*   **F. Paid Ad Removal**: At 03:10 and 03:26, within the "Shop" menu, the app offers "No Ads" options for 30, 60, and 180 days that require monetary payment ($9.99, $14.99, $39.99).
+*   **G. Reward-Based Ads**:
+    *   At 00:47 and 01:58, a "x2" reward button with a video play icon appears, indicating that watching an ad will double the earned reward.
+    *   At 02:52, after running out of lives, a "Revive" button with a video play icon is offered, implying that watching an ad will replenish hearts.
+    *   At 03:17, a "FREE" button with a video play icon is available to get 50 coins by watching a video.
+    *   At 04:15, a "x2" reward button with a video play icon is offered again.
+*   **H. Ad Without Exit Options**:
+    *   The full-screen interactive ad (01:02-01:58) starts at 01:02, but the earliest close button only appears at 01:48 (more than three seconds after the ad started).
+    *   The banner ads (02:02, 02:12, 03:07, 03:42 for Travel Town and 04:13-04:14, 04:45-04:45 for Total Battle) do not display any visible close buttons.
+*   **I. Ad Closure Failure**: At 01:49, the user clicks the small 'X' button on the full-screen ad, but instead of closing, the ad transitions to a larger 'X' and then automatically redirects to the App Store landing page (01:53-01:58), which is not the expected closure behavior.
+*   **L. Button-Covering Ads**: The banner ads (02:02, 02:12, 03:07, 03:42 for Travel Town and 04:13-04:14, 04:45-04:45 for Total Battle) are displayed at the bottom of the screen, obscuring the system's Home Indicator and potentially interfering with user interaction in that area. The user's cursor hovers over the obscured area at various times (e.g., 02:06, 02:11, 03:41, 04:14, 04:45), indicating an attempt to interact with the covered region.
+
+B C F G H I L
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+B C F G H I L
+Precision: 0.571
+Recall:    1.000
+F1-score:  0.727
+Ground truth for video E:\DarkDetection\dataset\syx\us\1607742297-尚宇轩.mp4:
+B C H I 
+
+模型输出正常结束
+Here is the response:
+Here's a step-by-step analysis of the video for ad dark patterns:
+
+**Step I: Identify all ads in the video**
+
+*   **QI.1 Ad time periods:**
+    *   00:15–00:17 (Banner ad: Cuze)
+    *   00:40–00:54 (Full-screen video ad: Billipool-Ball Shooting)
+    *   01:28–01:30 (Banner ad: Take Off Bolts)
+    *   01:58–02:00 (Banner ad: Tic Tac Toe)
+    *   02:21–02:35 (Full-screen video ad: Color Bubble)
+    *   02:45–02:47 (Banner ad: Tap Out)
+    *   03:17–03:19 (Banner ad: Puzzledom)
+    *   03:48–03:50 (Banner ad: Funswap)
+    *   04:28–05:03 (Full-screen video ad: Block Blast)
+
+*   **QI.2 Consolidated ads for analysis:**
+    *   Ad 1 (Banner): 00:15–00:17 (Cuze)
+    *   Ad 2 (Full-screen): 00:40–00:54 (Billipool-Ball Shooting)
+    *   Ad 3 (Banner): 01:28–01:30 (Take Off Bolts)
+    *   Ad 4 (Banner): 01:58–02:00 (Tic Tac Toe)
+    *   Ad 5 (Full-screen): 02:21–02:35 (Color Bubble)
+    *   Ad 6 (Banner): 02:45–02:47 (Tap Out)
+    *   Ad 7 (Banner): 03:17–03:19 (Puzzledom)
+    *   Ad 8 (Banner): 03:48–03:50 (Funswap)
+    *   Ad 9 (Full-screen): 04:28–05:03 (Block Blast)
+
+**Step II: Check overall dark patterns**
+
+*   **1. A. App Resumption Ads:**
+    *   Q1: Yes, the user accessed the Control Center at 00:17 and returned to the Home screen at 00:21.
+    *   Q2: No, a full-screen ad did not immediately appear after returning to the app from the Control Center or Home screen.
+    *   **Decision: Not present.**
+
+*   **2. B. Unexpected Full-Screen Ads:**
+    *   Q1: Full-screen ads: Ad 2 (00:40–00:54), Ad 5 (02:21–02:35), Ad 9 (04:28–05:03).
+    *   Q2: Ad 2 was triggered by clicking "Enter" at 00:39. Ad 5 was triggered by clicking "Next Word" at 02:15. Ad 9 was triggered by clicking "Enter" at 04:27. All were triggered by normal functional buttons.
+    *   Q3: None appeared without user gesture.
+    *   **Decision: Present.**
+
+*   **3. E. Barter for Ad-Free Privilege / F. Paid Ad Removal:**
+    *   No explicit offer for ad-free service or paid removal is shown.
+    *   **Decision: Not present.**
+
+*   **4. G. Reward-Based Ads:**
+    *   Q1: No buttons are shown that indicate an ad will appear for a reward.
+    *   **Decision: Not present.**
+
+*   **5. J. Increased Ads with Use:**
+    *   Q1: Yes, the app was effectively closed by returning to the Home screen at 00:22 and reopened at 00:23.
+    *   Q2: Ads were already present during the first launch (e.g., banner ad at 00:15).
+    *   Q3 & Q4: The ad volume and frequency (banner ad always present, full-screen ad after each word submission) remain consistent before and after the app is reopened.
+    *   **Decision: Not present.**
+
+**Step III: Check dark patterns for each ad**
+
+*   **Ad 1 (Banner: Cuze, 00:15–00:17)**
+    *   QIII.1: No close button.
+    *   QIII.2: No automatic landing page.
+    *   **6. C. Auto-Redirect Ads: Not present.**
+    *   **7. H. Ad Without Exit Options: Not applicable (banner ad).**
+    *   **8. I. Ad Closure Failure: Not present.**
+    *   **9. K. Gesture-Induced Ad Redirection: Not present.**
+    *   **10. L. Button-Covering Ads:**
+        *   Q1: Yes, it's a non-fullscreen banner ad, and functional buttons (keyboard, Enter) are present.
+        *   Q2: Yes, the ad overlaps with the system's Home Indicator at the bottom of the screen.
+        *   Q3: Yes, the user attempts to swipe up from the Home Indicator region at 00:17 and 00:20-00:21, indicating an attempt to use the Home Indicator, which is obstructed by the ad.
+        *   **Decision: Present.**
+    *   **11. M. Multiple Close Buttons: Not present.**
+    *   **12. N. Bias-Driven UI Ads: Not present.**
+    *   **13. O. Disguised Ads: Not present.**
+
+*   **Ad 2 (Full-screen: Billipool-Ball Shooting, 00:40–00:54)**
+    *   QIII.1: "Skip video" at 00:44–00:49, 'X' at 00:49–00:54.
+    *   QIII.2: Transitions to a static landing page within the ad at 00:49.
+    *   **6. C. Auto-Redirect Ads: Not present.**
+    *   **7. H. Ad Without Exit Options:**
+        *   Q1: Ad starts at 00:40. "Skip video" appears at 00:44 (4 seconds after start). Yes, this is more than 3 seconds.
+        *   **Decision: Present.**
+    *   **8. I. Ad Closure Failure: Not present.**
+    *   **9. K. Gesture-Induced Ad Redirection: Not present.**
+    *   **10. L. Button-Covering Ads: Not applicable (full-screen ad).**
+    *   **11. M. Multiple Close Buttons: Not present.**
+    *   **12. N. Bias-Driven UI Ads: Not present.**
+    *   **13. O. Disguised Ads: Not present.**
+
+*   **Ads 3, 4, 6, 7, 8 (Banner ads)**
+    *   These are all banner ads located at the bottom, similar to Ad 1. They cover the Home Indicator but there is no specific user interaction *attempt* to use the Home Indicator during their display periods. Therefore, "L. Button-Covering Ads" is **not present** for these specific instances based on Q3 for L. For all other dark patterns, they are **not present** for the same reasons as Ad 1.
+
+*   **Ad 5 (Full-screen: Color Bubble, 02:21–02:35)**
+    *   QIII.1: "Skip video" at 02:25–02:29, 'X' at 02:30–02:35.
+    *   QIII.2: Transitions to a static landing page within the ad at 02:29.
+    *   **6. C. Auto-Redirect Ads: Not present.**
+    *   **7. H. Ad Without Exit Options:**
+        *   Q1: Ad starts at 02:21. "Skip video" appears at 02:25 (4 seconds after start). Yes, this is more than 3 seconds.
+        *   **Decision: Present.**
+    *   **8. I. Ad Closure Failure: Not present.**
+    *   **9. K. Gesture-Induced Ad Redirection: Not present.**
+    *   **10. L. Button-Covering Ads: Not applicable (full-screen ad).**
+    *   **11. M. Multiple Close Buttons: Not present.**
+    *   **12. N. Bias-Driven UI Ads: Not present.**
+    *   **13. O. Disguised Ads: Not present.**
+
+*   **Ad 9 (Full-screen: Block Blast, 04:28–05:03)**
+    *   QIII.1: 'X' at 04:57–05:03.
+    *   QIII.2: Transitions to a static landing page within the ad at 04:57.
+    *   **6. C. Auto-Redirect Ads: Not present.**
+    *   **7. H. Ad Without Exit Options:**
+        *   Q1: Ad starts at 04:28. 'X' appears at 04:57 (29 seconds after start). Yes, this is more than 3 seconds.
+        *   **Decision: Present.**
+    *   **8. I. Ad Closure Failure: Not present.**
+    *   **9. K. Gesture-Induced Ad Redirection: Not present.**
+    *   **10. L. Button-Covering Ads: Not applicable (full-screen ad).**
+    *   **11. M. Multiple Close Buttons: Not present.**
+    *   **12. N. Bias-Driven UI Ads: Not present.**
+    *   **13. O. Disguised Ads: Not present.**
+
+**Final List of Dark Patterns:**
+
+B H L
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+B H L
+Precision: 0.667
+Recall:    0.500
+F1-score:  0.571
+Ground truth for video E:\DarkDetection\dataset\syx\us\1434957889-尚宇轩.mp4:
+B C H I 
+
+模型输出正常结束
+Here is the response:
+The following ad dark patterns are present in the video:
+
+**Step I: Identify all ads in the video**
+*   **QI.1 Ad Time Intervals:**
+    *   Ad 1: 01:17 – 01:44 (GoldenHoYeah Slots- Slots Games)
+    *   Ad 2: 02:43 – 03:06 (Find Differences Search & Spot)
+    *   Ad 3: 03:54 – 04:05 (Domino - Dominoes online game)
+    *   Ad 4: 04:50 – 05:05 (Nuts And Bolts)
+*   **QI.2 Consolidated Ads:** The identified intervals each represent a single ad unit.
+
+**Step II: Check overall dark patterns**
+*   **A. App Resumption Ads:** Not present. The user does not leave and return to the app to trigger ads.
+*   **B. Unexpected Full-Screen Ads:** Present.
+    *   Ad 1 (01:17-01:44) is full-screen and was triggered by clicking "Start a new game" (a normal functional button) at 01:16.
+    *   Ad 2 (02:43-03:06) is full-screen and was triggered by clicking "Continue" (a normal functional button) at 02:41.
+*   **E. Barter for Ad-Free Privilege:** Not present. No such offer is shown.
+*   **F. Paid Ad Removal:** Not present. No such offer is shown.
+*   **G. Reward-Based Ads:** Not present. No explicit "watch ad for reward" buttons are shown.
+*   **J. Increased Ads with Use:** Not present. The app is not closed and reopened during the video.
+
+**Step III: Check dark patterns for each ad**
+
+**Ad 1: GoldenHoYeah Slots (01:17 – 01:44)**
+*   **QIII.1 Close Buttons:** No close button is visible.
+*   **QIII.2 Landing Page:** 01:38 – 01:44 (App Store page for "GoldenHoYeah Slots- Slots Games")
+*   **C. Auto-Redirect Ads:** Present. The ad automatically redirects to its landing page (App Store) at 01:38 without any user interaction.
+*   **H. Ad Without Exit Options:** Present. No close button is visible at any point during the ad's display.
+
+**Ad 2: Find Differences Search & Spot (02:43 – 03:06)**
+*   **QIII.1 Close Buttons:** Two 'X' close buttons are visible at the top right and top left from 02:44 – 03:02. The user clicks the top right 'X' at 03:02.
+*   **QIII.2 Landing Page:** 03:03 – 03:05 (App Store page for "Find Differences Search & Spot")
+*   **C. Auto-Redirect Ads:** Not present. The redirection is triggered by the user clicking the close button.
+*   **H. Ad Without Exit Options:** Not present. A close button appears immediately (within 1 second) at 02:44.
+*   **I. Ad Closure Failure:** Present. After clicking the close button at 03:02, the ad redirects to its landing page (App Store) at 03:03 ("Closure Redirect Ads").
+*   **M. Multiple Close Buttons:** Present. Two 'X' close buttons are visible simultaneously from 02:44 – 03:02.
+
+**Ad 3: Domino - Dominoes online game (03:54 – 04:05)**
+*   **QIII.1 Close Buttons:** One 'X' close button is visible at the top right from 04:02 – 04:05. The user clicks it at 04:04.
+*   **QIII.2 Landing Page:** 04:03 – 04:05 (App Store page for "Domino - Dominoes online game")
+*   **C. Auto-Redirect Ads:** Not present. The redirection is triggered by the user clicking the "Install" button.
+*   **H. Ad Without Exit Options:** Present. The ad starts at 03:54, but the close button only appears at 04:02 (8 seconds later), which is more than three seconds after the ad started.
+*   **I. Ad Closure Failure:** Present. After clicking the close button at 04:04, the App Store page remains displayed (possibly from a previous click on "Install"), which is considered an unsuccessful closure (remains on landing page).
+*   **L. Button-Covering Ads:** Present. The ad, specifically the "Install" button, overlaps and obstructs the game's functional dominoes at the bottom of the screen from 04:02 onwards.
+*   **N. Bias-Driven UI Ads:** Present. The ad features a large, prominent "Install" button contrasted with a small, subtle 'X' close button, visually emphasizing the advertiser's preferred action.
+
+**Ad 4: Nuts And Bolts (04:50 – 05:05)**
+*   **QIII.1 Close Buttons:** One 'X' close button is visible at the top right from 05:03 – 05:05. The user clicks it at 05:03.
+*   **QIII.2 Landing Page:** 05:05 (App Store page for "Nuts And Bolts")
+*   **C. Auto-Redirect Ads:** Not present. The redirection is triggered by the user clicking the close button.
+*   **H. Ad Without Exit Options:** Present. The ad starts at 04:50, but the close button only appears at 05:03 (13 seconds later), which is more than three seconds after the ad started.
+*   **I. Ad Closure Failure:** Present. After clicking the close button at 05:03, the ad transitions to its landing page (App Store) at 05:05 ("Closure Redirect Ads").
+*   **L. Button-Covering Ads:** Present. The ad overlaps and obstructs the game's "Play Now" button at the bottom of the screen (visible at 05:04).
+
+**Final List of Dark Patterns:**
+B C H I L M N
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+B C H I L M N
+Precision: 0.571
+Recall:    1.000
+F1-score:  0.727
+Ground truth for video E:\DarkDetection\dataset\syx\us\6450923985-尚宇轩.MP4:
+F G H 
+
+模型输出正常结束
+Here is the response:
+**Step I: Identify all ads in the video:**
+*   **QI.1 At what time did advertisements appear (use the format xx:xx–xx:xx)?**
+    *   Ad 1: 04:13–04:31
+    *   Ad 2: 04:31–04:46
+
+*   **QI.2 Reconsider the ad time intervals you identified and determine whether they represent different stages of the same ad or different UI components of the same stage. Then treat these intervals as a single ad for further analysis.**
+    *   The intervals 04:13-04:31 and 04:31-04:46 are two distinct full-screen video ads from different advertisers.
+
+**Step II: Check the following dark patterns in the entire video:**
+
+*   **1. A. App Resumption Ads:**
+    *   Q1: Yes, the user temporarily left the app by going to the Home screen (00:26) and accessing the Control Center (00:28).
+    *   Q2: No, after the user returned to the app, no full-screen ad immediately appeared.
+    *   **Decision: Not present.**
+
+*   **2. B. Unexpected Full-Screen Ads:**
+    *   Q1: Yes, Ad 1 (04:13-04:31) and Ad 2 (04:31-04:46) were displayed in full-screen.
+    *   Q2: Yes, both Ad 1 and Ad 2 were triggered by the user clicking a normal functional button ("SPREAD IT!") within the app at 04:07, which is a game progression action and does not indicate an ad will appear.
+    *   Q3: No, none of the ads appeared without any gesture input.
+    *   **Decision: Present.**
+
+*   **3. Ad-free service offers:**
+    *   **F. Paid Ad Removal:**
+        *   At 01:42, the app offers a "NO ADS" option for $4.99.
+        *   **Decision: Present.**
+    *   **E. Barter for Ad-Free Privilege:**
+        *   The app offers "FREE REWARD TICKETS" (01:45) by watching ads, but this is not for ad-free privilege.
+        *   **Decision: Not present.**
+
+*   **4. G. Reward-Based Ads:**
+    *   Q1: Yes, at 01:45, there is a "FREE REWARD TICKETS" section with text "GET THE REWARD WITHOUT WATCHING THE VIDEO AD", implying that watching a video ad would grant a reward.
+    *   Q2: Yes, the buttons indicate that rewards (tickets) will be received for watching an ad.
+    *   **Decision: Present.**
+
+*   **5. J. Increased Ads with Use:**
+    *   Q1: No, the app was not fully closed and reopened. The user only left the app to the background and returned.
+    *   **Decision: Not present.**
+
+**Step III: Check the following dark patterns in every ad:**
+
+*   **Ad 1 (04:13–04:31):**
+    *   QIII.1: A close button (X icon) was shown from 04:13–04:31.
+    *   QIII.2: A landing page (App Store for "Kika Keyboard") was displayed from 04:17–04:22.
+    *   **6. C. Auto-Redirect Ads:**
+        *   Q1: Yes, the redirection to the App Store page at 04:17 occurred automatically without any user gesture on the ad content or close button.
+        *   **Decision: Present.**
+    *   **7. H. Ad Without Exit Options:**
+        *   Q1: No, the earliest close button appeared immediately at 04:13, less than three seconds after the ad started.
+        *   **Decision: Not present.**
+    *   **8. I. Ad Closure Failure:**
+        *   Q1: The user clicked the close button at 04:30.
+        *   Q2: After clicking the close button, the ad did not close successfully; instead, it transitioned to another advertisement (Ad 2) at 04:31.
+        *   **Decision: Present.**
+    *   **9. K. Gesture-Induced Ad Redirection:**
+        *   Q1: No, there were no texts or icons prompting the user to shake the phone.
+        *   **Decision: Not present.**
+    *   **10. L. Button-Covering Ads:**
+        *   Q1: The ad was a full-screen ad.
+        *   **Decision: Not present.**
+    *   **11. M. Multiple Close Buttons:**
+        *   Q1: No, only one close button was present simultaneously.
+        *   **Decision: Not present.**
+    *   **12. N. Bias-Driven Ads:**
+        *   Q1: The ad had "GET" and "X" buttons.
+        *   Q2: No, these buttons were not positioned adjacent to each other.
+        *   **Decision: Not present.**
+    *   **13. O. Disguised Ads:**
+        *   Q1: No, the ad did not use UI elements that mimicked the operating system’s UI.
+        *   **Decision: Not present.**
+
+*   **Ad 2 (04:31–04:46):**
+    *   QIII.1: A close button (X icon) was shown from 04:31–04:46.
+    *   QIII.2: A landing page (App Store for "AI Cool Fonts") was displayed from 04:36–04:41.
+    *   **6. C. Auto-Redirect Ads:**
+        *   Q1: Yes, the redirection to the App Store page at 04:36 occurred automatically without any user gesture on the ad content or close button.
+        *   **Decision: Present.**
+    *   **7. H. Ad Without Exit Options:**
+        *   Q1: No, the earliest close button appeared immediately at 04:31, less than three seconds after the ad started.
+        *   **Decision: Not present.**
+    *   **8. I. Ad Closure Failure:**
+        *   Q1: The user clicked the close button at 04:46.
+        *   Q2: After clicking the close button, the ad successfully closed and returned to the game.
+        *   **Decision: Not present.**
+    *   **9. K. Gesture-Induced Ad Redirection:**
+        *   Q1: No, there were no texts or icons prompting the user to shake the phone.
+        *   **Decision: Not present.**
+    *   **10. L. Button-Covering Ads:**
+        *   Q1: The ad was a full-screen ad.
+        *   **Decision: Not present.**
+    *   **11. M. Multiple Close Buttons:**
+        *   Q1: No, only one close button was present simultaneously.
+        *   **Decision: Not present.**
+    *   **12. N. Bias-Driven Ads:**
+        *   Q1: The ad had "GET" and "X" buttons.
+        *   Q2: No, these buttons were not positioned adjacent to each other.
+        *   **Decision: Not present.**
+    *   **13. O. Disguised Ads:**
+        *   Q1: No, the ad did not use UI elements that mimicked the operating system’s UI.
+        *   **Decision: Not present.**
+
+**Final List of Dark Patterns:**
+B C F G I
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+B C F G I
+Precision: 0.400
+Recall:    0.667
+F1-score:  0.500
+Ground truth for video E:\DarkDetection\dataset\syx\us\1498061633-尚宇轩.mp4:
+G H O 
+
+模型输出正常结束
+Here is the response:
+The identified ad dark patterns are:
+G H L O
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+G H L O
+Precision: 0.750
+Recall:    1.000
+F1-score:  0.857
+Ground truth for video E:\DarkDetection\dataset\syx\us\1210209691-尚宇轩.mp4:
+P 
+
+模型输出正常结束
+Here is the response:
+P
+Precision: 1.000
+Recall:    1.000
+F1-score:  1.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\1146998152-尚宇轩.MP4:
+F 
+
+模型输出正常结束
+Here is the response:
+P
+Precision: 0.000
+Recall:    0.000
+F1-score:  0.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\6447110104-尚宇轩.mp4:
+F G C H I 
+
+模型输出正常结束
+Here is the response:
+Here's a step-by-step analysis to identify the dark patterns:
+
+**Step I: Identify all ads in the video:**
+
+*   **QI.1 At what time did advertisements appear?**
+    *   00:23–00:32: "You found a Golden Item!" screen with an option to "GET EXTRA" (implied ad-watch).
+    *   01:05–01:23: Game-like ad with "TAP TO BUILD" leading to an App Store page.
+    *   02:07–02:09: App Store pop-up for "No Ads" in-app purchase.
+    *   02:17–02:20: In-app purchase menu ("Pro Pack", "Starter Pack", "Gems Pack", "Video Tickets Offer").
+    *   02:57–03:16: Game-like ad with "TAP TO BUILD" leading to an App Store page.
+    *   03:36–03:38: Settings/Options menu showing "No Ads" option. (This is part of the app's functional UI for paid ad removal, not an ad itself.)
+    *   04:39–04:44: "SELECT BOOSTER" screen for "BIGGER" booster.
+
+*   **QI.2 Reconsider the ad time intervals you identified and determine if they represent different stages of the same ad or different UI components of the same stage. Then treat these intervals as a single ad for further analysis.**
+    *   **Ad 1:** 00:23–00:32 ("You found a Golden Item!" reward screen).
+    *   **Ad 2:** 01:05–01:23 (Game-like ad with "TAP TO BUILD" and subsequent App Store page).
+    *   **Ad 3:** 02:07–02:09 & 02:17–02:20 (App Store purchase pop-up and in-app purchase menu related to removing ads or buying gems/tickets). These are considered part of the app's monetization UI, not ads in the deceptive pattern sense for "Unexpected Full-Screen Ads". However, they are relevant for "Paid Ad Removal".
+    *   **Ad 4:** 02:57–03:16 (Identical to Ad 2).
+    *   **Ad 5:** 04:39–04:44 ("SELECT BOOSTER" screen).
+
+**Step II: Check the following dark patterns in the entire video:**
+
+*   **1. (A. App Resumption Ads)**
+    *   Q1: Yes, the user temporarily left the app to access the Control Center (00:12) and Home screen (00:37, 02:46).
+    *   Q2: No, an ad did not immediately appear and occupy most or all of the screen after returning to the app in any of these instances.
+    *   **Decision:** "A. App Resumption Ads" is not present.
+
+*   **2. (B. Unexpected Full-Screen Ads)**
+    *   Q1: Full-screen ads were Ad 1 (00:23-00:32), Ad 2 (01:05-01:20, and the App Store pop-up after that), Ad 4 (02:57-03:15, and the App Store pop-up after that), and Ad 5 (04:39-04:44).
+    *   Q2:
+        *   Ad 1 (00:23-00:32): Triggered by collecting a "Golden Item" during gameplay, which is an in-game event, not clicking a normal functional button.
+        *   Ad 2 (01:05-01:23) and Ad 4 (02:57-03:16): These appear after the user completes a level in the *previous* game (Hole and Fill) and is presented with a "BUILD" section, which then shows a game-like ad. This seems to be a transition between game modes rather than triggered by a specific functional button within the "Hole and Fill" game itself. However, the subsequent "TAP TO BUILD" *is* a functional button within the ad itself.
+        *   Ad 5 (04:39-04:44): This ad appears after the user clicks the "START" button (04:37), which is a normal functional button to begin a new round of the game. This ad is full-screen and unexpected after simply wanting to start the game.
+    *   Q3: None of the full-screen ads appeared without any gesture input.
+    *   **Decision:** Ad 5 (04:39-04:44) satisfies Q1 (full-screen) and Q2 (triggered by clicking a normal functional button "START"). Therefore, "B. Unexpected Full-Screen Ads" is present.
+
+*   **3. (E. Barter for Ad-Free Privilege / F. Paid Ad Removal)**
+    *   Q1 (E. Barter for Ad-Free Privilege): The app does not offer an ad-free privilege in exchange for watching ads, rating, or other non-payment actions.
+    *   Q2 (F. Paid Ad Removal): Yes, at 02:07 and 02:18, there are options to remove ads or get packs including "NO ADS" that require payment (e.g., $2.99, $5.99, $19.99).
+    *   **Decision:** "F. Paid Ad Removal" is present.
+
+*   **4. (G. Reward-Based Ads)**
+    *   Q1: Yes, there are buttons with a film reel icon indicating an ad will appear:
+        *   00:24: "GET EXTRA +50"
+        *   01:44: "GET EXTRA" (for reviving game time)
+        *   04:21: "GET EXTRA" (for reviving game time)
+    *   Q2: Yes, these buttons clearly indicate the rewards (+50 coins or 10 more seconds).
+    *   **Decision:** "G. Reward-Based Ads" is present.
+
+*   **5. (J. Increased Ads with Use)**
+    *   Q1: The app was not fully closed and reopened. The user only accessed the Control Center or Home screen, keeping the app in the background.
+    *   **Decision:** "J. Increased Ads with Use" is not present.
+
+**Step III: Check the following dark patterns in every ad (from QI.2) one by one:**
+
+*   **Ad 1: 00:23–00:32 (Golden Item reward screen)**
+    *   QIII.1: Close button 'X' at 00:24-00:32.
+    *   QIII.2: No landing page.
+    *   6. (C. Auto-Redirect Ads): Not present.
+    *   7. (H. Ad Without Exit Options): Q1: No, the 'X' button appeared immediately. Decision: Not present.
+    *   8. (I. Ad Closure Failure): Q1: User clicks 'X' at 00:26. Q2: The ad closes successfully. Decision: Not present.
+    *   9. (K. Gesture-Induced Ad Redirection): Not present.
+    *   10. (L. Button-Covering Ads): Ad is full-screen. Decision: Not present.
+    *   11. (M. Multiple Close Buttons): Only one 'X' button. Decision: Not present.
+    *   12. (N. Bias-Driven UI Ads): Not present (the "GET EXTRA" button is for a reward, not a contrasting close option).
+    *   13. (O. Disguised Ads): Not present.
+
+*   **Ad 2: 01:05–01:23 (Game-like ad with "TAP TO BUILD" and subsequent App Store page)**
+    *   QIII.1: No close button on the initial ad screen (01:05-01:20). An 'X' button appears on the App Store pop-up (01:20-01:23).
+    *   QIII.2: App Store page for "Pro Builder 3D" (01:20-01:23).
+    *   6. (C. Auto-Redirect Ads): Q1: The redirection to the App Store (01:20) was triggered by user clicking "TAP TO BUILD". Decision: Not present.
+    *   7. (H. Ad Without Exit Options): Q1: Yes, the initial ad screen (01:05-01:20) shows no close button, forcing user interaction ("TAP TO BUILD") to proceed, which then leads to a screen with a close button. Decision: "H. Ad Without Exit Options" is present.
+    *   8. (I. Ad Closure Failure): Q1: User clicks 'X' at 01:22. Q2: Ad closes successfully. Decision: Not present.
+    *   9. (K. Gesture-Induced Ad Redirection): Not present.
+    *   10. (L. Button-Covering Ads): Ad is full-screen. Decision: Not present.
+    *   11. (M. Multiple Close Buttons): Only one 'X' button on the App Store pop-up. Decision: Not present.
+    *   12. (N. Bias-Driven UI Ads): Not present.
+    *   13. (O. Disguised Ads): Not present.
+
+*   **Ad 4: 02:57–03:16 (Identical to Ad 2)**
+    *   Same findings as Ad 2.
+    *   **Decision:** "H. Ad Without Exit Options" is present.
+
+*   **Ad 5: 04:39–04:44 ("SELECT BOOSTER" screen)**
+    *   QIII.1: Close button (checkmark with 'X' over it) at 04:40-04:44.
+    *   QIII.2: No landing page.
+    *   6. (C. Auto-Redirect Ads): Not present.
+    *   7. (H. Ad Without Exit Options): Q1: No, the close button appeared immediately. Decision: Not present.
+    *   8. (I. Ad Closure Failure): Q1: User clicks close button at 04:43. Q2: Ad closes successfully. Decision: Not present.
+    *   9. (K. Gesture-Induced Ad Redirection): Not present.
+    *   10. (L. Button-Covering Ads): Ad is full-screen. Decision: Not present.
+    *   11. (M. Multiple Close Buttons): Only one close button. Decision: Not present.
+    *   12. (N. Bias-Driven UI Ads): Not present.
+    *   13. (O. Disguised Ads): Not present.
+
+**Final List of Identified Dark Patterns:**
+B F G H
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+B F G H
+Precision: 0.750
+Recall:    0.600
+F1-score:  0.667
+Ground truth for video E:\DarkDetection\dataset\syx\us\6450103715-尚宇轩.mp4:
+A B F G H I 
+
+模型输出正常结束
+Here is the response:
+Here's a step-by-step analysis of the video for ad dark patterns:
+
+**Step I: Identify all ads in the video**
+
+*   **QI.1 At what time did advertisements appear (use the format xx:xx–xx:xx)?**
+    *   00:14–00:25 (AdShutter Ad)
+    *   00:33–00:55 (Cardi Mate Ad)
+    *   01:31–01:34 (Alibaba.com Ad)
+    *   02:03–02:41 (Chinese game ad - "富甲江户城-逆袭吧！豪商")
+    *   03:18–03:32 (Baidu.com Ad in Store section)
+    *   04:04–04:28 (Pro Builder 3D Ad)
+    *   04:34–04:43 (Pro Builder 3D Ad)
+
+*   **QI.2 Reconsider the ad time intervals you identified... Then treat these intervals as a single ad for further analysis.**
+    *   Ad 1: 00:14–00:25 (AdShutter Ad: full-screen video with app store landing page)
+    *   Ad 2: 00:33–00:55 (Cardi Mate Ad: full-screen video with app store landing page)
+    *   Ad 3: 01:31–01:34 (Alibaba.com Ad: banner ad within game UI) - Note: This banner is persistent throughout many segments of the video where the game is active, but these are the specific times it is interacted with or explicitly visible as an ad.
+    *   Ad 4: 02:03–02:41 (Chinese game ad: full-screen playable ad with app store landing page)
+    *   Ad 5: 03:18–03:32 (Baidu.com Ad: banner ad in store UI)
+    *   Ad 6: 04:04–04:28 (Pro Builder 3D Ad: full-screen playable ad with app store landing page)
+    *   Ad 7: 04:34–04:43 (Pro Builder 3D Ad: full-screen playable ad with app store landing page - same ad as Ad 6, different trigger)
+
+**Step II: Check the following dark patterns in the entire video:**
+
+*   **1. (A. App Resumption Ads)**
+    *   Q1: Yes, the user leaves the app multiple times to return to the Home screen (e.g., 00:28, 01:37, 02:02, 02:59, 04:28).
+    *   Q2: Yes, at 02:03, after returning to the app from the Home Screen, the Chinese game ad (Ad 4) immediately appears full-screen.
+    *   **Decision:** "A. App Resumption Ads" is present.
+
+*   **2. (B. Unexpected Full-Screen Ads)**
+    *   Q1: Full-screen ads are Ad 1, Ad 2, Ad 4, Ad 6, Ad 7.
+    *   Q2: Ad 6 (04:04) and Ad 7 (04:34) were triggered by clicking the "Accept" button for a "JUMP CHALLENGER" in-game quest (03:44, 04:32), which is a normal functional button.
+    *   Q3: Ad 1 (00:14), Ad 2 (00:33), and Ad 4 (02:03) appeared unprompted (after app launch or resumption).
+    *   **Decision:** "B. Unexpected Full-Screen Ads" is present.
+
+*   **3. Ad-free service offer**
+    *   Q1 (E. Barter for Ad-Free Privilege): No evidence of non-payment actions for ad removal.
+    *   Q2 (F. Paid Ad Removal): Yes, at 03:19, the UI shows an option "Disabling ads with every purchase!" for $0.99.
+    *   **Decision:** "F. Paid Ad Removal" is present.
+
+*   **4. (G. Reward-Based Ads)**
+    *   Q1: The "Free" button is present at various times (e.g., 00:26, 01:39), and sometimes leads to ads, but it doesn't explicitly state "watch an ad" or show an ad icon.
+    *   Q2: The "Free" button does not clearly indicate specific rewards for watching an ad. The "Claim" button for "New Items" (04:02) is a reward for completing a challenge, not for watching an ad.
+    *   **Decision:** "G. Reward-Based Ads" is not present.
+
+*   **5. (J. Increased Ads with Use)**
+    *   Q1: Yes, the app was closed and reopened multiple times.
+    *   Q2, Q3, Q4: Ads appear consistently from the first launch. There isn't a clear indication of a significant increase in ad volume after repeated use.
+    *   **Decision:** "J. Increased Ads with Use" is not present.
+
+**Step III: Check the following dark patterns in every ad:**
+
+*   **Ad 1: AdShutter Ad (00:14–00:25)**
+    *   QIII.1: Close button 'X' at 00:17–00:25.
+    *   QIII.2: App Store page for AdShutter at 00:15–00:16 and 00:25–00:25.
+    *   **6. (C. Auto-Redirect Ads)** Q1: Yes, at 00:15, the ad redirects to the App Store page automatically before the video starts, without user interaction. **Decision:** "C. Auto-Redirect Ads" is present.
+    *   **7. (H. Ad Without Exit Options)** Q1: Ad starts at 00:14, close button appears at 00:17 (3 seconds later). The condition is "more than three seconds". **Decision:** "H. Ad Without Exit Options" is not present for this specific ad.
+    *   **8. (I. Ad Closure Failure)** Q1: User clicks 'X' at 00:24. Q2: The ad redirects to the App Store page at 00:25 after the click. **Decision:** "I. Ad Closure Failure" is present (Closure Redirect Ads).
+
+*   **Ad 2: Cardi Mate Ad (00:33–00:55)**
+    *   QIII.1: Close button 'X' at 00:41–00:55.
+    *   QIII.2: App Store page for Cardi Mate at 00:55–00:55.
+    *   **6. (C. Auto-Redirect Ads)** Q1: No automatic redirection. **Decision:** "C. Auto-Redirect Ads" is not present.
+    *   **7. (H. Ad Without Exit Options)** Q1: Ad starts at 00:33, close button appears at 00:41 (8 seconds later), which is more than three seconds. **Decision:** "H. Ad Without Exit Options" is present.
+    *   **8. (I. Ad Closure Failure)** Q1: User clicks 'X' at 00:54. Q2: The ad redirects to the App Store page at 00:55 after the click. **Decision:** "I. Ad Closure Failure" is present (Closure Redirect Ads).
+
+*   **Ad 3: Alibaba.com Ad (Banner)**
+    *   QIII.1: No direct 'X' button on the banner throughout its display. User clicks an 'i' icon (01:06) to reveal options, including a hidden 'X' (01:08) and a 'Get' button (01:32, 01:56).
+    *   QIII.2: adssettings.google.com at 01:07–01:09; Alibaba App Store page at 01:32–01:34 and 01:57–01:59.
+    *   **6. (C. Auto-Redirect Ads)** Q1: No automatic redirection. All redirections are user-initiated. **Decision:** "C. Auto-Redirect Ads" is not present.
+    *   **7. (H. Ad Without Exit Options)** Q1: The ad banner is displayed for extended periods without an immediate close button. The close button is hidden behind an info icon and appears much later. **Decision:** "H. Ad Without Exit Options" is present.
+    *   **8. (I. Ad Closure Failure)** Q1: User clicks 'X' at 01:34. Q2: The ad redirects to the App Store page at 01:32-01:34 after the click. **Decision:** "I. Ad Closure Failure" is present (Closure Redirect Ads).
+
+*   **Ad 4: Chinese game ad (02:03–02:41)**
+    *   QIII.1: Small 'X' at 02:34–02:41.
+    *   QIII.2: App Store page for the game at 02:34–02:41.
+    *   **6. (C. Auto-Redirect Ads)** Q1: No automatic redirection. **Decision:** "C. Auto-Redirect Ads" is not present.
+    *   **7. (H. Ad Without Exit Options)** Q1: Ad starts at 02:03, close button appears at 02:34 (31 seconds later), which is much more than three seconds. **Decision:** "H. Ad Without Exit Options" is present.
+    *   **8. (I. Ad Closure Failure)** Q1: User clicks 'X' at 02:33. Q2: The ad redirects to the App Store page at 02:34 after the click. **Decision:** "I. Ad Closure Failure" is present (Closure Redirect Ads).
+
+*   **Ad 5: Baidu.com Ad in Store section (03:18–03:32)**
+    *   QIII.1: No close button visible.
+    *   QIII.2: No landing page shown.
+    *   **6. (C. Auto-Redirect Ads)** Q1: No redirection observed. **Decision:** "C. Auto-Redirect Ads" is not present.
+    *   **7. (H. Ad Without Exit Options)** Q1: The ad is displayed from 03:18 to 03:32 with no close button. **Decision:** "H. Ad Without Exit Options" is present.
+    *   **8. (I. Ad Closure Failure)** Q1: No close button clicked. **Decision:** "I. Ad Closure Failure" is not present.
+
+*   **Ad 6: Pro Builder 3D Ad (04:04–04:28)**
+    *   QIII.1: Small 'X' at 04:26–04:28.
+    *   QIII.2: App Store page for Pro Builder 3D at 04:28–04:28.
+    *   **6. (C. Auto-Redirect Ads)** Q1: No automatic redirection. **Decision:** "C. Auto-Redirect Ads" is not present.
+    *   **7. (H. Ad Without Exit Options)** Q1: Ad starts at 04:04, close button appears at 04:26 (22 seconds later), which is more than three seconds. **Decision:** "H. Ad Without Exit Options" is present.
+    *   **8. (I. Ad Closure Failure)** Q1: User clicks 'X' at 04:27. Q2: The ad redirects to the App Store page at 04:28 after the click. **Decision:** "I. Ad Closure Failure" is present (Closure Redirect Ads).
+
+*   **Ad 7: Pro Builder 3D Ad (04:34–04:43)**
+    *   QIII.1: Small 'X' at 04:41–04:43.
+    *   QIII.2: App Store page for Pro Builder 3D at 04:43–04:43.
+    *   **6. (C. Auto-Redirect Ads)** Q1: No automatic redirection. **Decision:** "C. Auto-Redirect Ads" is not present.
+    *   **7. (H. Ad Without Exit Options)** Q1: Ad starts at 04:34, close button appears at 04:41 (7 seconds later), which is more than three seconds. **Decision:** "H. Ad Without Exit Options" is present.
+    *   **8. (I. Ad Closure Failure)** Q1: User clicks 'X' at 04:42. Q2: The ad redirects to the App Store page at 04:43 after the click. **Decision:** "I. Ad Closure Failure" is present (Closure Redirect Ads).
+
+**Final List of Dark Patterns Present:**
+A B C F H I
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+A B C F H I
+Precision: 0.833
+Recall:    0.833
+F1-score:  0.833
+Ground truth for video E:\DarkDetection\dataset\syx\us\6449244841-尚宇轩.mp4:
+P 
+
+模型输出正常结束
+Here is the response:
+P
+Precision: 1.000
+Recall:    1.000
+F1-score:  1.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\6446140658-尚宇轩.mp4:
+B G C H I 
+
+模型输出正常结束
+Here is the response:
+The following ad dark patterns are present in the video:
+*   **B. Unexpected Full-Screen Ads**: Full-screen ads (01:40-02:11 and 04:42-04:58) appeared after the user clicked a normal functional button ("No, thanks" on the reward/extra time screen) to progress in the game.
+*   **C. Auto-Redirect Ads**: The ad from 02:11-02:17 automatically redirected to the App Store at 02:17 without any user gesture to trigger the redirection.
+*   **G. Reward-Based Ads**: The app presents options to earn rewards (e.g., +2000 coins at 01:20, +2865 coins at 03:33, SIZE LV.2 upgrade at 03:40, and +12s extra time at 04:38) by watching advertisements, indicated by video icons next to the reward value or a "FREE" button alongside a video icon.
+*   **H. Ad Without Exit Options**:
+    *   The ad from 01:40-02:11 displayed its first close button ("X") at 01:43, which is more than three seconds after the ad started.
+    *   The ad from 02:11-02:17 had no close button before automatically redirecting to the App Store at 02:17.
+    *   The ad from 04:42-04:58 displayed its first close button ("X") at 04:45, which is more than three seconds after the ad started.
+    *   The ad from 04:59-05:08 had no close button available on the ad itself (before user interaction with "STEAL" leading to an App Store redirect), and an "X" only appeared after returning from the App Store page.
+*   **I. Ad Closure Failure**:
+    *   When the user attempted to close the ad at 02:27 by clicking the "X" button, it redirected to the App Store ("Closure Redirect Ads").
+    *   When the user attempted to close the ad at 05:08 by clicking the "X" button, it redirected to the App Store ("Closure Redirect Ads").
+*   **N. Bias-Driven UI Ads**: In the ad at 04:59, there is a pair of contrasting buttons, "STEAL" and "PASS". The "STEAL" option, which benefits the advertiser (by encouraging interaction and potential app download), is visually highlighted with a green color and a checkmark, while "PASS" is grayed out.
+
+B C G H I N
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+B C G H I N
+Precision: 0.833
+Recall:    1.000
+F1-score:  0.909
+Ground truth for video E:\DarkDetection\dataset\syx\us\6452017015-尚宇轩.mp4:
+F 
+
+模型输出正常结束
+Here is the response:
+F
+Precision: 1.000
+Recall:    1.000
+F1-score:  1.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\503519713-尚宇轩.mp4:
+P 
+
+模型输出正常结束
+Here is the response:
+P
+Precision: 1.000
+Recall:    1.000
+F1-score:  1.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\1475454256-尚宇轩.mp4:
+B F H I 
+
+模型输出正常结束
+Here is the response:
+Here's a step-by-step analysis of the video for ad dark patterns:
+
+**Step I: Identify all ads in the video:**
+
+*   **QI.1 At what time did advertisements appear (use the format xx:xx–xx:xx)?**
+    *   00:16–00:32 (ChicFace App Store Ad)
+    *   01:00–01:25 (Unbolt It Game Ad)
+    *   02:14–02:42 (MagikLab App Store Ad)
+    *   03:00–03:13 (Traffic Driving Car Simulator Game Ad)
+    *   04:39–05:08 (Billipool-Ball Shooting Game Ad)
+
+*   **QI.2 Reconsider the ad time intervals you identified and determine whether they represent different stages of the same ad or different UI components of the same stage.**
+    The intervals listed above (00:16-00:32, 01:00-01:25, 02:14-02:42, 03:00-03:13, 04:39-05:08) each represent a single, distinct advertisement for further analysis.
+
+**Step II: Check the following dark patterns in the entire video:**
+
+*   **1. (Corresponding to "A. App Resumption Ads"):**
+    *   **Q1: During the app usage, did the user temporarily leave the app? If so, did they return to the Home screen or access the iPhone Control Center?** Yes, the user returned to the Home screen multiple times (e.g., at 00:22, 01:04, 02:20, 03:05, 04:42).
+    *   **Q2: If you think Q1 is true, then after the user returned to the app, did an ad you identified in QI.2 immediately appear and occupy most or all of the screen?** No. In all instances, when the user returned to the app, the previously displayed ad merely resumed from where it left off. A new ad did not appear upon app resumption.
+    *   **Decision:** "A. App Resumption Ads" is not present.
+
+*   **2. (Corresponding to "B. Unexpected Full-Screen Ads"):**
+    *   **Q1: Among the ads identified in QI.2, which ones were displayed in full-screen?** All five ads (00:16-00:32, 01:00-01:25, 02:14-02:42, 03:00-03:13, 04:39-05:08) were displayed in full-screen.
+    *   **Q2: Among the ads you identified in Q1, which ones were triggered by the user clicking a normal functional button within the app?**
+        *   The ad at 00:16 was triggered by clicking the 'x' button on a subscription pop-up.
+        *   The ad at 01:00 was triggered by clicking the "AI Art" button.
+        *   The ad at 02:14 was triggered by clicking the "Aging" button.
+        *   The ad at 03:00 was triggered by clicking the "Cartoon Comics" section (a 'hot' thumbnail).
+        *   The ad at 04:39 was triggered by clicking the "AI HairColor" button.
+        All these were normal functional buttons or dismiss actions within the app.
+    *   **Q3: Among the ads you identified in Q1, which ones appeared without any gesture input from the user?** None. All full-screen ads were triggered by user interaction.
+    *   **Decision:** "B. Unexpected Full-Screen Ads" is present.
+
+*   **3. At what time did the app offer the ad-free service? What does the user need to give or do in order to obtain this service?**
+    *   The app offers ad-free service as part of its "RecShot+" subscription. This is shown at 00:01 ($19.99/month), 00:41 ($29.99/quarter), and 00:47 ($0.67/day). To obtain this service, the user needs to make a payment.
+    *   **Q1: (Corresponding to "E. Barter for Ad-Free Privilege")** The user is not required to watch ads or rate the app to remove ads.
+    *   **Q2: (Corresponding to "F. Paid Ad Removal")** Yes, the user is required to make a payment.
+    *   **Decision:** "F. Paid Ad Removal" is present.
+
+*   **4. (Corresponding to "G. Reward-Based Ads"):**
+    *   **Q1: Does the app contain buttons that inform the user an ad will appear after clicking?** No, there are no specific buttons indicating "Watch ad for reward" or similar.
+    *   **Q2: Among the buttons you identified in Q1, which buttons indicate the rewards users will receive for watching an ad?** N/A
+    *   **Decision:** "G. Reward-Based Ads" is not present.
+
+*   **5. (Corresponding to "J. Increased Ads with Use"):**
+    *   **Q1: During app usage, was the app closed and then reopened?** The app was only minimized to the home screen and resumed; it was not fully terminated/closed.
+    *   **Decision:** "J. Increased Ads with Use" is not present.
+
+**Step III: Check the following dark patterns in every ads you listed in QI.2 one by one:**
+
+*   **Ad 1: ChicFace App Store Ad (00:16-00:32)**
+    *   **QIII.1: Which close buttons were shown in the ad, and what were their start and end times?** 'x' icon: 00:16-00:32.
+    *   **QIII.2: Does this ad displayed any landing page?** No separate landing page; the App Store banner is present throughout the ad (from 00:20).
+    *   **6. (Corresponding to "C. Auto-Redirect Ads"):** Not present (no automatic redirection).
+    *   **7. (Corresponding to "H. Ad Without Exit Options"):** Not present (close button appeared immediately at 00:16).
+    *   **8. (Corresponding to "I. Ad Closure Failure"):** Not present (ad closed successfully at 00:32).
+    *   **9. (Corresponding to "K. Gesture-Induced Ad Redirection"):** Not present.
+    *   **10. (Corresponding to "L. Button-Covering Ads"):** Not present (full-screen ad).
+    *   **11. (Corresponding to "M. Multiple Close Buttons"):** Not present (only one close button).
+    *   **12. (Corresponding to "N. Bias-Driven Ads"):** Not present.
+    *   **13. (Corresponding to "O. Disguised Ads"):** Not present.
+
+*   **Ad 2: Unbolt It Game Ad (01:00-01:25)**
+    *   **QIII.1: Which close buttons were shown in the ad, and what were their start and end times?** 'x' icon: 01:04-01:25.
+    *   **QIII.2: Does this ad displayed any landing page?** Yes, an App Store page (for Unbolt It) appears at 01:21-01:25.
+    *   **6. (Corresponding to "C. Auto-Redirect Ads"):** Yes, the ad automatically transitioned to the App Store page at 01:21 after the video finished playing, without user interaction.
+    *   **7. (Corresponding to "H. Ad Without Exit Options"):** Yes, the earliest close button ('x') appeared at 01:04, which is 4 seconds after the ad started at 01:00 (greater than 3 seconds).
+    *   **8. (Corresponding to "I. Ad Closure Failure"):** Not present (user did not click the close button for this ad).
+    *   **9. (Corresponding to "K. Gesture-Induced Ad Redirection"):** Not present.
+    *   **10. (Corresponding to "L. Button-Covering Ads"):** Not present (full-screen ad).
+    *   **11. (Corresponding to "M. Multiple Close Buttons"):** Not present (only one close button).
+    *   **12. (Corresponding to "N. Bias-Driven Ads"):** Not present.
+    *   **13. (Corresponding to "O. Disguised Ads"):** Not present.
+
+*   **Ad 3: MagikLab App Store Ad (02:14-02:42)**
+    *   **QIII.1: Which close buttons were shown in the ad, and what were their start and end times?**
+        *   "Skip video" button: 02:20-02:42.
+        *   'x' icon: 02:37-02:42.
+    *   **QIII.2: Does this ad displayed any landing page?** Yes, an App Store page (for MagikLab) appears at 02:17-02:42, alongside the video.
+    *   **6. (Corresponding to "C. Auto-Redirect Ads"):** Not present (the App Store page appears early and stays, not a redirection after ad concludes).
+    *   **7. (Corresponding to "H. Ad Without Exit Options"):** Yes, the earliest close button ("Skip video") appeared at 02:20, which is 6 seconds after the ad started at 02:14 (greater than 3 seconds).
+    *   **8. (Corresponding to "I. Ad Closure Failure"):** Not present (ad closed successfully at 02:42).
+    *   **9. (Corresponding to "K. Gesture-Induced Ad Redirection"):** Not present.
+    *   **10. (Corresponding to "L. Button-Covering Ads"):** Not present (full-screen ad).
+    *   **11. (Corresponding to "M. Multiple Close Buttons"):** Yes, "Skip video" (02:20-02:42) and 'x' (02:37-02:42) buttons overlapped.
+    *   **12. (Corresponding to "N. Bias-Driven Ads"):** Not present.
+    *   **13. (Corresponding to "O. Disguised Ads"):** Not present.
+
+*   **Ad 4: Traffic Driving Car Simulator Game Ad (03:00-03:13)**
+    *   **QIII.1: Which close buttons were shown in the ad, and what were their start and end times?** 'x' icon: 03:05-03:13.
+    *   **QIII.2: Does this ad displayed any landing page?** Yes, an App Store page (for Traffic Driving Car Simulator) appears at 03:08-03:13.
+    *   **6. (Corresponding to "C. Auto-Redirect Ads"):** Yes, the ad automatically transitioned to the App Store page at 03:08 after the video finished playing, without user interaction.
+    *   **7. (Corresponding to "H. Ad Without Exit Options"):** Yes, the earliest close button ('x') appeared at 03:05, which is 5 seconds after the ad started at 03:00 (greater than 3 seconds).
+    *   **8. (Corresponding to "I. Ad Closure Failure"):** Not present (ad closed successfully at 03:13).
+    *   **9. (Corresponding to "K. Gesture-Induced Ad Redirection"):** Not present.
+    *   **10. (Corresponding to "L. Button-Covering Ads"):** Not present (full-screen ad).
+    *   **11. (Corresponding to "M. Multiple Close Buttons"):** Not present (only one close button).
+    *   **12. (Corresponding to "N. Bias-Driven Ads"):** Not present.
+    *   **13. (Corresponding to "O. Disguised Ads"):** Not present.
+
+*   **Ad 5: Billipool-Ball Shooting Game Ad (04:39-05:08)**
+    *   **QIII.1: Which close buttons were shown in the ad, and what were their start and end times?** 'x' icon: 05:01-05:08.
+    *   **QIII.2: Does this ad displayed any landing page?** Yes, an App Store page (for Billipool-Ball Shooting) appears at 04:43-05:08.
+    *   **6. (Corresponding to "C. Auto-Redirect Ads"):** Not present (the App Store page appears early and stays, not a redirection after ad concludes).
+    *   **7. (Corresponding to "H. Ad Without Exit Options"):** Yes, the earliest close button ('x') appeared at 05:01, which is 22 seconds after the ad started at 04:39 (greater than 3 seconds).
+    *   **8. (Corresponding to "I. Ad Closure Failure"):** Not present (ad closed successfully at 05:08).
+    *   **9. (Corresponding to "K. Gesture-Induced Ad Redirection"):** Not present.
+    *   **10. (Corresponding to "L. Button-Covering Ads"):** Not present (full-screen ad).
+    *   **11. (Corresponding to "M. Multiple Close Buttons"):** Not present (only one close button).
+    *   **12. (Corresponding to "N. Bias-Driven Ads"):** Not present.
+    *   **13. (Corresponding to "O. Disguised Ads"):** Not present.
+
+**Summary of identified dark patterns:**
+
+*   **B. Unexpected Full-Screen Ads**: Present (All full-screen ads were triggered by clicking normal functional buttons).
+*   **C. Auto-Redirect Ads**: Present (Ad 2 and Ad 4 automatically redirected to their App Store landing pages after the video portion concluded).
+*   **F. Paid Ad Removal**: Present (The app offers paid subscriptions to remove ads).
+*   **H. Ad Without Exit Options**: Present (The close button for Ad 2, Ad 3, and Ad 4, Ad 5 appeared more than three seconds after the ad started).
+*   **M. Multiple Close Buttons**: Present (Ad 3 showed both a "Skip video" button and an 'x' icon simultaneously).
+
+**Final Output:**
+B C F H M
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+B C F H M
+Precision: 0.600
+Recall:    0.750
+F1-score:  0.667
+Ground truth for video E:\DarkDetection\dataset\syx\us\6480585904-尚宇轩.mp4:
+F G 
+
+模型输出正常结束
+Here is the response:
+F G
+Precision: 1.000
+Recall:    1.000
+F1-score:  1.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\1163805393-尚宇轩.MP4:
+P 
+
+模型输出正常结束
+Here is the response:
+P
+Precision: 1.000
+Recall:    1.000
+F1-score:  1.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\6468838207-尚宇轩.MP4:
+G H 
+
+模型输出正常结束
+Here is the response:
+The following ad dark patterns are present:
+*   **A. App Resumption Ads**: At 01:13, a "Watch Video Ad" pop-up appeared immediately after the user returned to the app from the Home Screen, occupying most of the screen.
+*   **C. Auto-Redirect Ads**: At 01:52, after the "Airplane Chefs:Cook in the Air" ad concluded, it automatically redirected to its landing page (App Store) without any user interaction to close or skip it.
+*   **G. Reward-Based Ads**: At 01:13 and 05:32, a "Watch Video Ad" pop-up explicitly informed the user that watching a video ad would reward them with 2,000 Gems, clearly indicating a reward for viewing an advertisement.
+*   **H. Ad Without Exit Options**: The "Airplane Chefs:Cook in the Air" ad started at 01:19, but the close button only appeared at 01:25, which is more than three seconds after the ad began.
+*   **I. Ad Closure Failure**: At 01:25, the user attempted to close the "Airplane Chefs:Cook in the Air" ad by clicking the 'X' button. However, the ad did not close and instead transitioned to another scene within the ad, demonstrating a failure to close as expected.
+
+A C G H I
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+A C G H I
+Precision: 0.400
+Recall:    1.000
+F1-score:  0.571
+Ground truth for video E:\DarkDetection\dataset\syx\us\6450688179-尚宇轩.MP4:
+B G C H I 
+
+模型输出正常结束
+Here is the response:
+B G H I
+Precision: 1.000
+Recall:    0.800
+F1-score:  0.889
+Ground truth for video E:\DarkDetection\dataset\syx\us\1497465230-尚宇轩.MP4:
+P 
+
+模型输出正常结束
+Here is the response:
+P
+Precision: 1.000
+Recall:    1.000
+F1-score:  1.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\1425445169-尚宇轩.MP4:
+B F H I 
+
+模型输出正常结束
+Here is the response:
+Here's the step-by-step analysis of the video for ad dark patterns:
+
+**Step I: Identify all ads in the video**
+
+*   **QI.1 At what time did advertisements appear (use the format xx:xx–xx:xx)?**
+    *   00:10–00:13 (Full-screen ad for Google Chrome)
+    *   00:24–00:25 (Banner ad for Music Wave)
+    *   00:52–00:54 (Banner ad for Gallery Vault)
+    *   00:54–00:55 (Banner ad for Viva Video)
+    *   00:56–00:58 (Banner ad for Vivo Video)
+    *   00:58–00:59 (Banner ad for Music Player)
+    *   00:59–01:05 (Full-screen video ad)
+    *   01:10–01:12 (Banner ad for RTO Vehicle)
+    *   01:12–01:13 (Banner ad for Gallery Vault)
+    *   01:13–01:15 (Banner ad for Viva Video)
+    *   01:15–01:17 (Banner ad for Vivo Video)
+    *   01:17–01:19 (Banner ad for Music Player)
+    *   01:19–01:21 (Banner ad for RTO Vehicle)
+    *   01:24–01:25 (Banner ad for Google App)
+    *   01:27–01:29 (Banner ad for Google App)
+    *   01:50–01:51 (Banner ad for Music Player)
+    *   01:53–01:54 (Banner ad for RTO Vehicle)
+    *   01:54–01:55 (Banner ad for Watch History)
+    *   01:57–01:58 (Banner ad for Tik Saver Video Downloader Tok)
+    *   02:04–02:05 (Banner ad for Tik Saver Video Downloader Tok)
+    *   03:30–03:34 (Full-screen ad for Google Chrome)
+    *   03:35–03:39 (Full-screen ad for Google Chrome)
+    *   03:59–04:27 (Full-screen ad for Norton 360)
+
+*   **QI.2 Reconsider the ad time intervals you identified and determine whether they represent different stages of the same ad (e.g., a video followed by an playable demo) or different UI components of the same stage (e.g., a full-screen video and a banner with summary information below it). Then treat these intervals as a single ad for further analysis.**
+    *   **Ad 1 (Google Chrome Full-screen Ad):** 00:10-00:13, 03:30-03:34, 03:35-03:39. These are instances of the same ad.
+    *   **Ad 2 (Banner Ads):** Various short intervals throughout the video (e.g., 00:24-00:25, 00:52-00:59, 01:10-01:21, 01:24-01:29, 01:50-01:58, 02:04-02:05). These are different ads displayed in a consistent banner slot.
+    *   **Ad 3 (Full-screen Video Ad):** 00:59-01:05. This appears as one continuous full-screen video ad.
+    *   **Ad 4 (Norton 360 Full-screen Ad):** 03:59-04:27. This is one continuous full-screen video ad.
+
+**Step II: Check the following dark patterns in the entire video**
+
+*   **1. (A. App Resumption Ads)**
+    *   **Q1: During the app usage, did the user temporarily leave the app? If so, did they return to the Home screen or access the iPhone Control Center?** Yes, the user went to the Home screen at 00:48 and returned at 00:52. The user also went to the Home screen at 03:34 and returned at 03:44.
+    *   **Q2: If you think Q1 is true, then after the user returned to the app, did an ad you identified in QI.2 immediately appear and occupy most or all of the screen?** No, at 00:52, a small banner ad appeared (Ad 2), not a full-screen ad. At 03:44, no ad appeared immediately.
+    *   **Decision:** "A. App Resumption Ads" is not present.
+
+*   **2. (B. Unexpected Full-Screen Ads)**
+    *   **Q1: Among the ads identified in QI.2, which ones were displayed in full-screen?**
+        *   Ad 1 (Google Chrome Full-screen Ad)
+        *   Ad 3 (Full-screen Video Ad)
+        *   Ad 4 (Norton 360 Full-screen Ad)
+    *   **Q2: Among the ads you identified in Q1, which ones were triggered by the user clicking a normal functional button within the app?**
+        *   Ad 3 (Full-screen Video Ad at 00:59) appeared after the user clicked the 'X' (close) button on a banner ad (Ad 2) at 00:59. This is an unexpected full-screen ad triggered by trying to close another ad, which counts as a normal functional button interaction in this context.
+    *   **Q3: Among the ads you identified in Q1, which ones appeared without any gesture input from the user?**
+        *   Ad 4 (Norton 360 Full-screen Ad at 03:59) appeared after the user navigated through different tabs (SONG, GENRE, PLAYLIST) and a loading screen within the app, seemingly unprompted as part of navigation. This counts as an "Unprompted Intrusive Ad."
+        *   Ad 1 (Google Chrome Full-screen Ad at 00:10) appeared upon app launch, which is excluded from "normal app usage" as per the definition.
+    *   **Decision:** "B. Unexpected Full-Screen Ads" is present (due to Ad 3 and Ad 4).
+
+*   **3. Ad-free service offers**
+    *   **Q1: (E. Barter for Ad-Free Privilege)** No, there was no option to watch ads, rate the app, or perform actions other than payment for ad removal.
+    *   **Q2: (F. Paid Ad Removal)** Yes, at 02:42-02:45, the app presents an "UPDATE TO PREMIUM" screen offering "Remove ads" for a monthly fee of $4.99 or other durations.
+    *   **Decision:** "F. Paid Ad Removal" is present.
+
+*   **4. (G. Reward-Based Ads)**
+    *   **Q1 & Q2:** No buttons were observed that indicated an ad would appear in exchange for a reward.
+    *   **Decision:** "G. Reward-Based Ads" is not present.
+
+*   **5. (J. Increased Ads with Use)**
+    *   **Q1:** The app was not fully terminated and relaunched during the video. The user only put the app in the background and returned.
+    *   **Decision:** "J. Increased Ads with Use" is not present.
+
+**Step III: Check the following dark patterns in every ad listed in QI.2 one by one**
+
+*   **6. (C. Auto-Redirect Ads)**
+    *   No ad in the video automatically redirected to a landing page without user interaction (e.g., clicking the ad content or a close button).
+    *   **Decision:** "C. Auto-Redirect Ads" is not present.
+
+*   **7. (H. Ad Without Exit Options)**
+    *   **Ad 3 (Full-screen Video Ad, 00:59-01:05):** The ad started at 00:59, but the close button ('X') only appeared at 01:03, which is more than three seconds after the ad began.
+    *   **Decision:** "H. Ad Without Exit Options" is present.
+
+*   **8. (I. Ad Closure Failure)**
+    *   **Ad 2 (Banner Ad at 00:58):** The user clicked the 'X' button at 00:59. Instead of closing, the app immediately displayed Ad 3 (full-screen video ad) as a new interface. This falls under "Closure Redirect Ads" (I.b), which is a manifestation of "Ad Closure Failure."
+    *   **Decision:** "I. Ad Closure Failure" is present.
+
+*   **9. (K. Gesture-Induced Ad Redirection)**
+    *   No ads in the video displayed text or icons prompting the user to shake the phone.
+    *   **Decision:** "K. Gesture-Induced Ad Redirection" is not present.
+
+*   **10. (L. Button-Covering Ads)**
+    *   The banner ads (Ad 2) appeared at the top of the screen and did not overlap with the system's Home Indicator or critical in-app functional buttons (which were at the bottom).
+    *   **Decision:** "L. Button-Covering Ads" is not present.
+
+*   **11. (M. Multiple Close Buttons)**
+    *   No ads in the video displayed multiple close buttons simultaneously.
+    *   **Decision:** "M. Multiple Close Buttons" is not present.
+
+*   **12. (N. Bias-Driven UI Ads)**
+    *   Ads 1, 3, and 4 did present contrasting buttons (e.g., "GET"/"Learn more"/etc. vs. 'X'), but the call-to-action buttons were not positioned immediately adjacent to the close buttons in a way that would create strong visual bias as per the definition.
+    *   **Decision:** "N. Bias-Driven UI Ads" is not present.
+
+*   **13. (O. Disguised Ads)**
+    *   No ads in the video used UI elements that mimicked the operating system's UI to disguise themselves as non-ad content. The system prompts for photos, notifications, and tracking were actual system prompts, not disguised ads.
+    *   **Decision:** "O. Disguised Ads" is not present.
+
+**Final Output:**
+B F H I
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+B F H I
+Precision: 1.000
+Recall:    1.000
+F1-score:  1.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\396885309-尚宇轩.MP4:
+P 
+
+模型输出正常结束
+Here is the response:
+O
+Precision: 0.000
+Recall:    0.000
+F1-score:  0.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\385487194-尚宇轩.MP4:
+B H M 
+
+模型输出正常结束
+Here is the response:
+A B F I M
+Precision: 0.400
+Recall:    0.667
+F1-score:  0.500
+Ground truth for video E:\DarkDetection\dataset\syx\us\6471490579-尚宇轩.MP4:
+F 
+
+模型输出正常结束
+Here is the response:
+F
+Precision: 1.000
+Recall:    1.000
+F1-score:  1.000
+Ground truth for video E:\DarkDetection\dataset\syx\us\1570306380-尚宇轩.MP4:
+B G C H 
+
+模型输出正常结束
+Here is the response:
+Here's a step-by-step analysis of the video for ad dark patterns:
+
+**Step I: Identify all ads in the video**
+
+*   **QI.1 At what time did advertisements appear?**
+    *   00:49–01:29: Hair Tattoo Master ad
+    *   01:38–02:17: Eatventure ad
+    *   02:42–03:19: Beat Battle - Full Mod Fight ad
+    *   04:41–05:17: GMOD mobile game ad
+
+*   **QI.2 Reconsider the ad time intervals...**
+    *   The identified intervals are treated as single ads, including video and interactive elements.
+
+**Step II: Check the following dark patterns in the entire video**
+
+*   **1. (Corresponding to "A. App Resumption Ads"):**
+    *   **Q1: During the app usage, did the user temporarily leave the app? If so, did they return to the Home screen or access the iPhone Control Center?**
+        *   Yes, the user accesses the Control Center multiple times (e.g., 00:48, 01:37, 02:41, 04:40).
+    *   **Q2: If you think Q1 is true, then after the user returned to the app, did an ad you identified in QI.2 immediately appear and occupy most or all of the screen?**
+        *   Yes, at 00:49, 01:38, 02:42, and 04:41, full-screen ads appear immediately after the user returns to the app from the Control Center.
+    *   **Decision:** "A. App Resumption Ads" is present.
+
+*   **2. (Corresponding to "B. Unexpected Full-Screen Ads"):**
+    *   **Q1: Among the ads identified in QI.2, which ones were displayed in full-screen?**
+        *   All ads (00:49-01:29, 01:38-02:17, 02:42-03:19, 04:41-05:17) were full-screen.
+    *   **Q2: Among the ads you identified in Q1, which ones were triggered by the user clicking a normal functional button within the app?**
+        *   None of these full-screen ads were triggered by clicking a normal functional button. They appeared upon app resumption.
+    *   **Q3: Among the ads you identified in Q1, which ones appeared without any gesture input from the user?**
+        *   These ads appeared upon app resumption, which is a specific type of trigger. They did not appear *unprompted* during normal app usage.
+    *   **Decision:** "B. Unexpected Full-Screen Ads" is not present.
+
+*   **3. Ad-free service offers:**
+    *   **Q1: (Corresponding to "E. Barter for Ad-Free Privilege")**
+        *   The app offers "WATCH AD TO UNLOCK" specific content (Agoti MOD at 00:16), which is a reward for watching an ad for a specific feature, not a general ad-free privilege for the entire app.
+    *   **Q2: (Corresponding to "F. Paid Ad Removal")**
+        *   No indication of a paid ad removal option.
+    *   **Decision:** Neither "E. Barter for Ad-Free Privilege" nor "F. Paid Ad Removal" is present.
+
+*   **4. (Corresponding to "G. Reward-Based Ads"):**
+    *   **Q1: Does the app contain buttons that inform the user an ad will appear after clicking?**
+        *   Yes, at 00:16, a button "WATCH AD TO UNLOCK" is visible.
+    *   **Q2: Among the buttons you identified in Q1, which buttons indicate the rewards users will receive for watching an ad?**
+        *   The button "WATCH AD TO UNLOCK" clearly indicates that content will be unlocked as a reward.
+    *   **Decision:** "G. Reward-Based Ads" is present.
+
+*   **5. (Corresponding to "J. Increased Ads with Use"):**
+    *   **Q1: During app usage, was the app closed and then reopened?**
+        *   Yes, the app was closed at 00:33 and reopened at 00:36.
+    *   **Q2: Using the moment identified in Q1 as a dividing point, did the app refrain from showing ads during the first launch but display ads during the second launch?**
+        *   No, ads were present during the first launch as well.
+    *   **Q3: Using the moment identified in Q1 as a dividing point, during the app’s second run, did some UIs display a large number of ads? Did these ad-heavy UIs also contain as many ads during the first run?**
+        *   There is no significant change in the number or type of ads displayed after reopening the app.
+    *   **Q4: In terms of overall ad volume, did the app display significantly more ads during the second run compared to the first run?**
+        *   No, the ad volume seems consistent.
+    *   **Decision:** "J. Increased Ads with Use" is not present.
+
+**Step III: Check the following dark patterns in every ad listed in QI.2 one by one**
+
+*   **Ad 1: Hair Tattoo Master (00:49-01:29)**
+    *   **QIII.1: Close buttons:** 'X' button visible from 01:27 to 01:29.
+    *   **QIII.2: Landing page:** No direct landing page.
+    *   **6. (C. Auto-Redirect Ads):** Not present (no automatic redirection).
+    *   **7. (H. Ad Without Exit Options):** Present (ad started at 00:49, close button appeared at 01:27, much longer than 3 seconds).
+    *   **8. (I. Ad Closure Failure):** Not present (ad closed successfully after clicking 'X' at 01:28).
+    *   **9. (K. Gesture-Induced Ad Redirection):** Not present.
+    *   **10. (L. Button-Covering Ads):** Not present (full-screen ad).
+    *   **11. (M. Multiple Close Buttons):** Not present (only one 'X' button).
+    *   **12. (N. Bias-Driven Ads):** Not present.
+    *   **13. (O. Disguised Ads):** Not present.
+
+*   **Ad 2: Eatventure (01:38-02:17)**
+    *   **QIII.1: Close buttons:** 'X' button visible from 02:10 to 02:17.
+    *   **QIII.2: Landing page:** No direct landing page.
+    *   **6. (C. Auto-Redirect Ads):** Not present.
+    *   **7. (H. Ad Without Exit Options):** Present (ad started at 01:38, close button appeared at 02:10, much longer than 3 seconds).
+    *   **8. (I. Ad Closure Failure):** Not present (ad closed successfully after clicking 'X' at 02:16).
+    *   **9. (K. Gesture-Induced Ad Redirection):** Not present.
+    *   **10. (L. Button-Covering Ads):** Not present.
+    *   **11. (M. Multiple Close Buttons):** Not present.
+    *   **12. (N. Bias-Driven Ads):** Not present.
+    *   **13. (O. Disguised Ads):** Not present.
+
+*   **Ad 3: Beat Battle - Full Mod Fight (02:42-03:19)**
+    *   **QIII.1: Close buttons:** 'X' button visible from 03:13 to 03:19.
+    *   **QIII.2: Landing page:** No direct landing page.
+    *   **6. (C. Auto-Redirect Ads):** Not present.
+    *   **7. (H. Ad Without Exit Options):** Present (ad started at 02:42, close button appeared at 03:13, much longer than 3 seconds).
+    *   **8. (I. Ad Closure Failure):** Not present (ad closed successfully after clicking 'X' at 03:18).
+    *   **9. (K. Gesture-Induced Ad Redirection):** Not present.
+    *   **10. (L. Button-Covering Ads):** Not present.
+    *   **11. (M. Multiple Close Buttons):** Not present.
+    *   **12. (N. Bias-Driven Ads):** Not present.
+    *   **13. (O. Disguised Ads):** Not present.
+
+*   **Ad 4: GMOD mobile game ad (04:41-05:17)**
+    *   **QIII.1: Close buttons:** 'X' button visible from 05:12 to 05:17.
+    *   **QIII.2: Landing page:** No direct landing page.
+    *   **6. (C. Auto-Redirect Ads):** Not present.
+    *   **7. (H. Ad Without Exit Options):** Present (ad started at 04:41, close button appeared at 05:12, much longer than 3 seconds).
+    *   **8. (I. Ad Closure Failure):** Not present (ad closed successfully after clicking 'X' at 05:16).
+    *   **9. (K. Gesture-Induced Ad Redirection):** Not present.
+    *   **10. (L. Button-Covering Ads):** Not present.
+    *   **11. (M. Multiple Close Buttons):** Not present.
+    *   **12. (N. Bias-Driven Ads):** Not present.
+    *   **13. (O. Disguised Ads):** Not present.
+
+**Final List of Dark Patterns Present:**
+A G H
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+A G H
+Precision: 0.667
+Recall:    0.500
+F1-score:  0.571
+Ground truth for video E:\DarkDetection\dataset\syx\us\978674211-尚宇轩.MP4:
+A B F H I 
+
+模型输出正常结束
+Here is the response:
+B F H
+Precision: 1.000
+Recall:    0.600
+F1-score:  0.750
+Ground truth for video E:\DarkDetection\dataset\syx\us\6447191495-尚宇轩.MP4:
+G C H I 
+
+模型输出正常结束
+Here is the response:
+B C G N
+Precision: 0.500
+Recall:    0.500
+F1-score:  0.500
+Ground truth for video E:\DarkDetection\dataset\syx\us\6448941703-尚宇轩.MP4:
+F G H 
+
+模型输出正常结束
+Here is the response:
+The following ad dark patterns are present: F G H L
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+F G H L
+Precision: 0.750
+Recall:    1.000
+F1-score:  0.857
+Ground truth for video E:\DarkDetection\dataset\syx\us\1576645378-尚宇轩.MP4:
+B F C H I M 
+
+模型输出正常结束
+Here is the response:
+The following ad dark patterns are present:
+*   **A. App Resumption Ads**: At 03:12, the user returns to the app from the Home screen, and a full-screen ad appears immediately at 03:22.
+*   **B. Unexpected Full-Screen Ads**: Full-screen ads appear at 02:10-02:26 and 03:22-03:40 after the user clicks the "Refresh" functional button (at 02:04 and 03:17 respectively).
+*   **C. Auto-Redirect Ads**: After the video portion of the ad ends at 02:26, the app automatically redirects to the App Store for 2 seconds (02:29-02:30) before displaying the playable ad, without any user interaction.
+*   **F. Paid Ad Removal**: At 00:32, the app offers a "Free & Super Guard Forever" option for $1.99, which serves as a paid option to remove ads.
+*   **H. Ad Without Exit Options**: The full-screen video ads at 02:10-02:26 and 03:22-03:40 do not show a close button for more than 3 seconds after they start (the 'X' button appears at 02:24 and 03:38 respectively, which is 14 and 16 seconds after the ad started).
+*   **I. Ad Closure Failure**:
+    *   At 02:25, the user clicks the close button, but the ad redirects to the App Store (02:29) and then proceeds to a playable ad (02:31).
+    *   At 02:35, the user clicks the close button on the playable ad, but it redirects to the App Store (02:36).
+    *   At 03:38, the user clicks the close button on the video ad, but it redirects to the App Store (03:39).
+
+A B C F H I
+格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...
+Here is the extracted result from original result:
+A B C F H I
+Precision: 0.833
+Recall:    0.833
+F1-score:  0.833
+All average metrics:
+samples:
+Average Precision: 0.728
+Average Recall:    0.810
+Average F1-score:  0.752
+micro:
+Average Precision: 0.696
+Average Recall:    0.803
+Average F1-score:  0.746
+macro:
+Average Precision: 0.527
+Average Recall:    0.781
+Average F1-score:  0.543
+
+Process finished with exit code 0

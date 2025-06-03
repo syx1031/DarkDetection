@@ -1,0 +1,239 @@
+App Resumption Ads:
+1. 假阳性在6450351607-尚宇轩.mp4:
+    原回答：
+    *   At 00:24, the interactive ad for "Playdoku" appears immediately after the user returns to the app from the Home Screen.
+    *   At 04:49, another interactive ad (similar to the previous one, but with a different image) appears immediately after the user returns to the app from the Home Screen.
+    分析：
+        00:24时广告只是由于用户点击了“Get Free”按钮而开始播放，我没有看到Home Screen，这可能是模型的幻觉
+        04:49时用户的确短暂的离开app并进入了task manager然后立即返回，这个过程漏出了一点Home Screen。但是广告在进入task manager之前就开始播放了，并且回到app后也在继续播放，不属于App Resumption Ads.
+2. 假阳性在6459478478-尚宇轩.mp4:
+    原回答：The ad reappeared promptly after the user returned from the home screen at 00:32, creating an unwelcome interruption.
+    分析：
+        00:32时用户点击了广告导致广告跳转落地页（在浏览器中展示），因此用户不得不打开task manager并切回app以继续测试。尽管task manager界面短暂的出现了作为背景的Home Indicator，但这是广告播放中的问题，不属于App Resumption Ads.
+3. 假阳性在1574455218-尚宇轩.mp4:
+    原回答：**First**, I looked for "App Resumption Ads," where an ad immediately appears after the user returns to the app. I found one instance of this at 03:10, right after the user returns to the game from the Home screen. This seems to be a common tactic.
+    分析：03:10时一局游戏结束，然后一个全屏广告自行出现，注意这个广告的第一屏UI模仿了Home Screen的设计。据此推出两种可能错误原因：1. 模型产生了幻觉，虚构了用户返回Home Screen然后回来。2. 模型把广告的第一屏当做了Home Screen，以为用户此时在Home Screen。
+4. 结果正确但过程错误在6450103715-尚宇轩.mp4:
+    原回答：
+    **1. (A. App Resumption Ads)**
+    *   Q1: Yes, the user leaves the app multiple times to return to the Home screen (e.g., 00:28, 01:37, 02:02, 02:59, 04:28).
+    *   Q2: Yes, at 02:03, after returning to the app from the Home Screen, the Chinese game ad (Ad 4) immediately appears full-screen.
+    分析：虽然0:28、01:37用户确实回到了Home Screen，但02:02用户只点击了app内“看广告获得奖励”按钮。模型虚构了一次回到Home Screen的事件。
+5. 假阳性在6468838207-尚宇轩.mp4:
+    原回答：**A. App Resumption Ads**: At 01:13, a "Watch Video Ad" pop-up appeared immediately after the user returned to the app from the Home Screen, occupying most of the screen.
+    分析：用户确实在01:10从Home Screen回来，但01:13（三秒之后）弹出的pop up是用户自己点击弹出的，跟01:10的事件无关，并且pop-up也不是广告。
+
+6. 假阳性在1570306380-尚宇轩.mp4:
+    原回答：
+    **1. (Corresponding to "A. App Resumption Ads"):**
+    *   **Q1: During the app usage, did the user temporarily leave the app? If so, did they return to the Home screen or access the iPhone Control Center?**
+        *   Yes, the user accesses the Control Center multiple times (e.g., 00:48, 01:37, 02:41, 04:40).
+    *   **Q2: If you think Q1 is true, then after the user returned to the app, did an ad you identified in QI.2 immediately appear and occupy most or all of the screen?**
+        *   Yes, at 00:49, 01:38, 02:42, and 04:41, full-screen ads appear immediately after the user returns to the app from the Control Center.
+    *   **Decision:** "A. App Resumption Ads" is present.
+    分析：Q1中所有的时间点都是模型的幻觉，用户没有在任何时候访问Control Center
+7. 假阴性在978674211-尚宇轩.mp4:
+    原回答：没有提到是否检验了“App Resumption Ads”
+    分析：模型准确定位了广告（包括使用了App Reumption Ads的那些），但模型没有检测出App Resumption Ads。
+
+总结：
+    1. 消除幻觉
+    2. 强调广告->落地页->task manager（Home Screen)->回到广告，这不属于App Resumption Ads
+    3. 强化动作识别能力，尤其是interface出现的原因推理能力（即界面是用户动作导致的还是自行弹出的）
+
+Unexpected Full-Screen Ads:
+1. 假阳性，6450351607-尚宇轩.mp4:
+    原回答：**2. (B. Unexpected Full-Screen Ads)**
+    *   Q1: Among the ads identified in QI.2, which ones were displayed in full-screen? All ads (00:24-01:26, 01:31-01:46, 03:34-04:34, 04:36-04:53) are full-screen.
+    *   Q2: Among the ads you identified in Q1, which ones were triggered by the user clicking a normal functional button within the app?
+        *   Ad 1 (00:24-01:26) was triggered by clicking "GET FREE +5" at 00:23, which is a functional button to gain hearts.
+        *   Ad 3 (03:34-04:34) was triggered by clicking "Claim 150" at 03:33, a reward button after completing a level.
+        *   Ad 4 (04:36-04:53) was triggered by clicking "FREE GIFT" at 04:56 (this specific ad instance started from a reward button).
+    *   Q3: Among the ads you identified in Q1, which ones appeared without any gesture input from the user? None.
+    *   Decision: "B. Unexpected Full-Screen Ads" is present.
+    分析：Gemini分析的时间点和触发方式都是完全对的，但结论错误由于它没有意识到这些按钮已经通过类似视频、电视的icon暗示用户观看广告了。
+2. 假阳性，6447461923
+    原回答：*   **2. B. Unexpected Full-Screen Ads:**
+    *   Q1: Full-screen ads: Ad 4 (01:47-02:32), Ad 7 (04:26-05:05), Ad 8 (05:13-05:19).
+    *   Q2: These ads were triggered by the user clicking the "BATTLE" button, which is a normal functional button within the app (01:46, 04:25, 05:12).
+    *   Q3: No full-screen ads appeared unprompted during normal app usage.
+    *   **Decision: B. Unexpected Full-Screen Ads is present.**
+    分析：广告触发方式说的不对，用户没有点击Battle按钮，而是点击旁边已经暗示了需要看广告的按钮
+3. 假阳性，673014145
+    原回答：*   **B. Unexpected Full-Screen Ads**: At 00:44, a full-screen pop-up ad for "Premium Caller ID Pro Edition" appears after the user clicks the "Perform Lookup" button (a normal functional button). This is an unexpected interruption of the app's core functionality.
+    分析：模型对动作过程的推理正确，但付费购买免除广告的页面本身并不应该属于广告，需要在prompt中进一步明确。
+4. 假阳性，6463493974
+    原回答：*   **B. Unexpected Full-Screen Ads**: The full-screen ad for the basketball game (03:05-03:46) appeared after the user clicked a "Soldier" skill upgrade button (03:04), which is considered a normal functional button in the app.
+    分析：模型对动作识别错误，用户点击的不是“Soldier”而是下方的Reroll按钮，其中包含要求用户看广告的icon
+5. 假阳性，6450923985
+    原回答：**2. (Corresponding to "B. Unexpected Full-Screen Ads")**
+    *   **Q1: Among the ads identified in QI.2, which ones were displayed in full-screen?** Both Ad 1 (04:12-04:31) and Ad 2 (04:31-04:47) were displayed in full-screen.
+    *   **Q2: Among the ads you identified in Q1, which ones were triggered by the user clicking a normal functional button within the app?** Neither ad was triggered by clicking a "normal functional button." Ad 1 appeared after a "FAIL" state in the game, and Ad 2 appeared immediately after Ad 1 (after the user attempted to close Ad 1).
+    *   **Q3: Among the ads you identified in Q1, which ones appeared without any gesture input from the user?** Both ads appeared intrusively without direct user initiation to view an ad. They interrupted the gameplay experience.
+    *   **Decision:** "B. Unexpected Full-Screen Ads" is present.
+    分析：模型动作识别错误，用户点击了左上角的skip按钮导致广告出现，广告并非自行出现的
+6. 假阳性，6447110104
+    原回答：**(B. Unexpected Full-Screen Ads)**
+    *   **Q1: Among the ads identified in QI.2, which ones were displayed in full-screen?**
+        *   Ad 1 (00:32–01:24) - Yes.
+        *   Ad 2 (02:21–03:17) - Yes.
+    *   **Q2: Among the ads you identified in Q1, which ones were triggered by the user clicking a normal functional button within the app?**
+        *   Ad 1 (00:32): The user clicks the "100" coin button at 00:32 (to claim a reward) and immediately a full-screen ad appears. This button is a normal functional button to proceed in the game.
+        *   Ad 2 (02:21): The user navigates through the "No Ads" purchase option (02:18-02:20), then a full-screen ad appears upon returning to the main game screen. While not a direct game button click, it is an unexpected full-screen ad appearing after a non-gameplay interaction.
+    *   **Q3: Among the ads you identified in Q1, which ones appeared without any gesture input from the user?**
+        *   Neither ad appeared without user input. They followed user clicks/navigation.
+    *   **Decision:** Ad 1 satisfies Q1 and Q2. Therefore, "B. Unexpected Full-Screen Ads" is **present**.
+    分析：用户确实点击了claim a reward按钮并导致触发广告，但是这个按钮左上角有icon暗示了看广告的含义。
+7. 假阳性，6447191495
+    原回答：*   **2. (Corresponding to "B. Unexpected Full-Screen Ads"):**
+    *   Q1: Ads 1 (01:23–01:56), 2 (02:51–03:50), 3 (05:01–05:12), and 4 (05:12–05:22) were all displayed in full-screen.
+    *   Q2: Ad 1 was triggered by clicking "CONTINUE" on the mission accomplished screen (02:11). Ad 2 was triggered by clicking "Close" on the daily reward screen (02:27) and then "Play" on the map screen (02:32). Ad 3 was triggered by clicking "CONTINUE" on the mission accomplished screen (05:00). Ad 4 was triggered by clicking "Close" on the daily reward screen (05:11). All these are normal functional buttons.
+    *   Q3: None of the full-screen ads appeared without any gesture input from the user.
+    *   Decision: "B. Unexpected Full-Screen Ads" is present.
+    分析：用户没有点击模型说的这些按钮，另外时间上也出现错位，比如02:11秒的点击不可能会触发01:23的广告。
+
+总结：
+    1. 强化动作识别，尤其要求模型明确广告触发的原因，即用户到底是点了还是没点屏幕上的按钮，如果点了点的是什么按钮
+    2. 强化模型检测能力关于按钮是否表达了“邀请用户看广告”的意思
+
+Auto-Redirect Ads:
+1. 假阳性在6463493974-尚宇轩.mp4:
+    分析：看过视频，我认为Gemini说得对，我会校正相应的标注
+2. 假阳性在6453159988-尚宇轩.mp4:
+    原回答：**C. Auto-Redirect Ads**: At 01:53, after the interactive ad concludes, it automatically redirects to the \"Travel Town - Merge Adventure\" App Store landing page without any user interaction.\n*
+    分析：在01:53，用户点击了关闭按钮，然后广告切换到下一个界面展示了“Travel Town..."的文字，但这个界面显然不同于经典的App Store landing page，他更像是广告自行设计的界面。
+3. 假阳性在6450923985.mp4:
+    原回答：**6. C. Auto-Redirect Ads:**\n        *   Q1: Yes, the redirection to the App Store page at 04:17 occurred automatically without any user gesture on the ad content or close button.\n        *   **Decision: Present.**\n 
+    分析：4:17屏幕上方出现了一个广告的介绍interface，虽然有App Store的标识，但那只是一个banner，模型据此认为这是落地页就有点过度理解了。
+4. 假阳性在6450103715-尚宇轩.mp4:
+    原回答：模型在对所有广告进行决策时认为没有Auto-Redirect Ads出现，但final decision汇总时却加上了这种dp
+    分析：可能模型在长输出中遗忘了自己之前的输出
+5. 假阳性1475454256-尚宇轩.mp4:
+    原回答：**6. (Corresponding to \"C. Auto-Redirect Ads\"):** Yes, the ad automatically transitioned to the App Store page at 01:21 after the video finished playing, without user interaction.\n    *
+    分析：看过视频，我无法确定01:21出现的页面是否属于广告落地页，虽然不是App Store界面但它从功能到UI设计上都像是一个landing page。结合6468838207和6463493974的结果，广告可能会使用纯白色背景，中间有几行文字或"GET“按钮的设计，这些界面很像（也许就是）landing page，因此我们需要一个更严谨的landing page定义使它与其他interface的边界清晰。
+6. 假阴性1479305181：
+    原回答：    *   6. (C. Auto-Redirect Ads): No, redirection is user-triggered by clicking "GET".
+    分析：用户没有点击中间的"GET“按钮，广告是自动跳转的
+7. 假阴性6447461923:
+    原回答：*   **6. C. Auto-Redirect Ads:**
+    *   None of the ads automatically redirected to a landing page after their conclusion without user interaction. The transition from video to playable ad in Ad 7 is a stage transition within the ad, not a final redirection. User clicks were needed to proceed to app stores.
+    *   **Decision: C. Auto-Redirect Ads is not present.**
+    分析：很难得知模型是没有识别到landing page的出现，还是认为这些重定向是点击导致触发的。实际上有两次重定向是没有任何用户输入，自行触发的
+8. 假阴性6447110104:
+    原回答：6.  **(C. Auto-Redirect Ads)**
+    *   **Q1: For each redirection identified in QIII.2, check whether it was triggered automatically without any user gesture.**
+        *   The redirection to the App Store at 01:20 was triggered by the user clicking the "TAP TO BUILD" area within the ad, not automatically.
+    *   **Decision:** "C. Auto-Redirect Ads" is **not present**.
+    分析：尽管鼠标在TAP TO BUILD周围晃动了，但用户始终没有点击，但模型虚构了用户的一次点击。
+9. 假阴性6446140658:
+    原回答中模型对Auto-Redirect的决定很犹豫，在5次决策中2次认为其出现，剩余3次则认为其没有出现但回答很笼统，且没有按照我说的任务步骤来分析。
+
+Ad Closure Failure:
+1. 假阳性在6450923985-尚宇轩.mp4:
+    原回答：**8. I. Ad Closure Failure:**\n        *   Q1: The user clicked the close button at 04:30.\n        *   Q2: After clicking the close button, the ad did not close successfully; instead, it transitioned to another advertisement (Ad 2) at 04:31.\n        *   **Decision: Present.**\n
+    分析：在04:30用户没有做任何点击，尽管看起来另一个广告立即播放了。模型虚构了一次用户的点击
+2. 假阳性在6468838207-尚宇轩.mp4:
+    原回答：**I. Ad Closure Failure**: At 01:25, the user attempted to close the \"Airplane Chefs:Cook in the Air\" ad by clicking the 'X' button. However, the ad did not close and instead transitioned to another scene within the ad, demonstrating a failure to close as expected.
+    分析：用户这里只是暂时切到task manager然后切回，模型幻想了一次关闭按钮点击。
+3. 假阴性6463493974：
+    原回答：   Auto-Redirect Ads *   At 03:47, after the playable ad concludes, it automatically redirects to the App Store landing page for the basketball game without user interaction.
+    分析：3:46时的重定向是用户点击关闭按钮触发的，并非自动重定向
+4. 结果对但过程错6453159988：
+    原回答：*   **8. Ad Closure Failure (I):**
+        *   Q1: The user clicked the "X" close button at 01:52.
+        *   Q2: After clicking the "X" button, the ad immediately redirected the user to the App Store page (01:53), which is considered an unsuccessful ad closure (specifically, "Closure Redirect Ads").
+        *   **Decision: Present.**
+    分析：01:53用户点击的是右上角的“快进”icon而不是“X”，另外弹出的新interface也不是App Store的landing page，因此不是“Closure Redirect Ads”
+5. 假阴性6447110104：
+    原回答：8.  **(I. Ad Closure Failure)**
+    *   **Q1: For the ad close buttons identified in QIII.1, check whether the user clicked them and record the time.**
+        *   The user clicks the 'x' button at 01:23.
+    *   **Q2: For each click in Q1, check whether the ad was not successfully closed.**
+        *   The ad successfully closes after the user clicks the 'x' button at 01:23.
+    *   **Decision:** "I. Ad Closure Failure" is **not present**.
+    分析：用户的确在01:23点击了一次“X”且广告被关闭，但模型没有识别到01:21点击“>>"的动作（它认为当时用户点击的是”TAP TO BUILD”），这意味着模型既没有识别到">>"也是关闭按钮，更没有识别到用户点击它的动作。
+
+    原回答：**I. Ad Closure Failure**:\n    *   At 01:07, the user clicks the \"Done\" button (ad close button), but the ad redirects to the App Store page.\n    
+    *   At 01:22, the user clicks the \"X\" button (ad close button), but the ad redirects to the App Store page.\n    
+    *   At 02:59, the user clicks the \"Done\" button (ad close button), but the ad redirects to the App Store page.\n    
+    *   At 03:15, the user clicks the \"X\" button (ad close button), but the ad redirects to the App Store page.\n*
+    分析：从用户动作角度看，模型对动作细节的分析都是错误的，用户没有点击过上面这些按钮，从结果角度看：01:07是重定向到了landing page，但01:22只是展示了新的interface而不是落地页。
+6. 假阴性6450688179：
+    原回答：**Ad 1 (02:19–02:33):** 
+    *   **8. I. Ad Closure Failure:**
+    *   Q1: The user clicked the close button (X) on the App Store page at 03:00.
+    *   Q2: The ad (App Store page) was successfully closed and returned to the main game.
+    *   **Decision: I. Ad Closure Failure is not present.**
+    分析：模型似乎没有发现2:33用户点击了一次“>>"关闭按钮，而且广告也并没有如模型所述在2:33结束而是展示了一个试玩demo。但模型的确识别到了3:00时对”X“的点击，并且那一次广告是被关闭了。
+7. 假阴性1425445169：
+    原回答：*   **8. (I. Ad Closure Failure)**
+    *   Q1: User clicked the 'X' button for Ad 3 at 01:04, for Ad 4 at 03:38, and for Ad 5 at 04:31.
+    *   Q2: In all these cases, the ad closed successfully and the app returned to the expected previous screen.
+    *   **Decision: "I. Ad Closure Failure" is not present.**
+    分析：用户确实在这些时间点点击了“Skip Video”、“continue to app >>”等按钮，但（1）3:38点击后广告没有立刻关闭，而是展示了下一个interface，但模型认为该广告截止到3:38；（2）虽然4:31时用户点击关闭按钮并成功关闭广告，但4:27时用户还点击了另一个关闭按钮，但模型没有分析到那次动作。
+
+Multiple Close Buttons:
+1. 假阴性6459478478：
+    原回答：*   **11. M. Multiple Close Buttons**: Q1: Only one "X" close button was present. "Done" and "To clean up" are action buttons, not close buttons. **Decision: M is not present for Ad 1.**
+    分析：模型对于“Done”算不算关闭按钮很犹豫，有时候说是有时候说不是，但在任何时候模型都没能识别到右上角“continue to app >>”也是关闭按钮
+
+2. 假阴性1576645378：
+    原回答：*   **QI.1 At what time did advertisements appear (use the format xx:xx–xx:xx)?**
+    *   02:11–02:26 (Ad 1: BitLife video ad)
+    *   02:30–02:40 (Ad 2: BitLife playable ad)
+    *   **11. (M. Multiple Close Buttons)**
+        *   **Q1: Check the time intervals identified in QIII.1. Do the appearance time intervals of different close buttons in the ad overlap...?** No, only one 'X' button is shown.
+        *   **Decision:** "M. Multiple Close Buttons" is not present for Ad 1.
+    分析：首先广告时间分析错误，这两个广告实际上是一个广告。中间四秒弹出的落地页是第一个广告点击了">>|"按钮后弹出的，然后用户点击了“Done”再开始播放广告下一阶段。
+    然后模型没有识别到第一个阶段的">>|"按钮，认为广告只有一个关闭按钮。
+    
+    原回答：*   **11. (M. Multiple Close Buttons)**
+    *   **Q1:** Yes, from 02:24 to 02:26, both the small 'X' and the larger 'X' buttons were simultaneously visible.
+    *   **Decision:** "M. Multiple Close Buttons" is present for Ad 1.
+    分析：这应该是一次幻觉，02:24-02:26没有发现任何“X”按钮
+
+Disguised Ads:
+1. 假阳性1479305181：
+    原回答：*   **Ad 2 (Full-screen Disguised Ad & Playable Demo: 01:05-01:26)**
+        *   13. (O. Disguised Ads): Yes, the "New version" dialog (01:05-01:17) mimics an iOS system update or notification to appear as part of the system UI.
+        *   **Decision: "O. Disguised Ads" is present.**
+    分析：模型分析的很正确，这个new version box在模仿iOS系统设计，我会更正对应的标注
+
+No Dark Pattern:
+1. 假阴性503519713：
+    原回答：*   **3. (E. Barter for Ad-Free Privilege & F. Paid Ad Removal)**:
+    *   At 03:55-04:16, the "Unlock Zombies, Run!" screen is shown, which explicitly states "Unlock 500+ missions, ad-free!". This option requires payment.
+    *   Q1 (for E): The user is not required to watch ads, rate the app, or perform any action other than making a payment to remove ads.
+    *   Decision: "E. Barter for Ad-Free Privilege" is **not** present.
+    *   Q2 (for F): The user is required to make a payment ($6.99/month, $49.99/year, $89.99/year) to gain access to an "ad-free" experience.
+    *   Decision: "F. Paid Ad Removal" is **present**.
+    分析：模型分析正确，有付费免除广告的购买界面出现，我会更正对应标注
+
+2. 假阴性：
+    原回答：*   **2. Unexpected Full-Screen Ads (B)**
+    *   Q1: Full-screen ads appeared at 00:41-00:43, 01:41-01:43, and 02:37-02:38.
+    *   Q2: These full-screen ads were triggered by the user clicking on news article thumbnails:
+        *   At 00:39, clicking a news article thumbnail led to the ad at 00:41.
+        *   At 01:40, clicking a news article thumbnail led to the ad at 01:41.
+        *   At 02:36, clicking a news article thumbnail led to the ad at 02:37.
+        Clicking on a news article thumbnail is a normal functional button within the app, and the subsequent appearance of a full-screen ad is unexpected.
+    *   Q3: None of the full-screen ads appeared without any gesture input; they were all triggered by user clicks on content.
+    *   Decision: "B. Unexpected Full-Screen Ads" is present.
+    分析：用户看起来确实是点击了新闻条目然后广告出现，但首先这些广告是小窗播放的视频并非全屏，其次尽管用户不经意间点到了，但这些文章下方有“Sponsor”证明他们就是广告，总之选Unexpected Full-Screen Ads不对，考虑再次向模型强调“全屏”的含义。
+    
+    原回答：*   **10. Button-Covering Ads (L)**
+    *   Q1: Multiple non-fullscreen banner ads are displayed at the bottom of the screen (e.g., 00:34-00:36, 00:36-00:37, 00:43-00:44, 00:44-00:46, and many others throughout the video). The app's bottom navigation bar is also present on the screen.
+    *   Q2: These banner ads consistently cover the Home Indicator area at the very bottom of the iPhone screen.
+    *   Q3: The presence of these ads in the Home Indicator area, which is typically used for system gestures (like swiping up to go home or access multitasking), obstructs the user's interaction with this essential system element. While the user manages to swipe up, the ad's placement directly over it constitutes an obstruction.
+    *   Decision: "L. Button-Covering Ads" is present.
+    分析：模型提到的这些广告都是嵌入到页面中而非底部banner的，因此随着屏幕滚动位置会移动，但模型只能看到静态的图片所以可能分不出固定的和嵌入式的广告。另外prompt要求模型必须观察到用户反复尝试使用按钮才能标注这一类，但模型这里没有遵守。
+
+    原回答：**H. Ad Without Exit Options**
+    Numerous static banner advertisements embedded within the news feed lack a visible close button. This design forces users to either scroll past the advertisements or interact with them (e.g., by clicking on the ad content, which leads to a landing page), thus obliging them to view the ad for its full duration or engage in unintended actions.
+    分析：模型说得对，很多嵌入式广告没有关闭按钮，我会校正这些标注
+
+    原回答：**O. Disguised Ads**
+    Many advertisements are visually designed to closely resemble the surrounding news articles. They feature similar layouts, including an image, a headline, and a brief description, making them difficult to distinguish from organic content. The only distinguishing features are small labels such as "Sponsored" or "Ad", which are often inconspicuous.
+    分析：尽管模型的分析有道理，这些广告与周围普通文章太像了因此可能符合其他paper中“Disguised Ads”的定义，但我们的prompt已经强调当且仅当广告设计模仿系统UI时才属于这种DP。
+
+
