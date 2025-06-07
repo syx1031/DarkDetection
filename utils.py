@@ -13,11 +13,14 @@ def time_to_seconds(time_str):
     if len(parts) == 2:
         m, s = parts
         return m * 60 + s
-    elif len(parts) == 3:
+    elif len(parts) == 3 and parts[0] == 0 and parts[1] <= 10 and parts[2] <= 59:
         h, m, s = parts
         return h * 3600 + m * 60 + s
+    elif len(parts) == 3 and parts[0] <= 10 and parts[1] <= 59 and parts[2] <= 999:
+        m, s, ms = parts
+        return m * 60 + s
     else:
-        raise ValueError("时间格式错误，必须是 mm:ss 或 hh:mm:ss")
+        raise ValueError("时间格式错误，必须是 mm:ss, hh:mm:ss或者mm:ss:msms")
 
 
 def seconds_to_mmss(seconds):
@@ -45,8 +48,8 @@ PAID_KEYS = [
 ]
 
 # Configure the client and tools
-FREE_API_KEYS = {key: {'client': genai.Client(api_key=key), 'status': True, 'uploads': {}, 'timer': None, 'lock': threading.Lock()} for key in FREE_KEYS}
-PAID_API_KEYS = {key: {'client': genai.Client(api_key=key), 'status': True, 'uploads': {}, 'timer': None, 'lock': threading.Lock()} for key in PAID_KEYS}
+FREE_API_KEYS = {key: {'client': genai.Client(api_key=key, http_options={'timeout': 600000}), 'status': True, 'uploads': {}, 'timer': None, 'lock': threading.Lock()} for key in FREE_KEYS}
+PAID_API_KEYS = {key: {'client': genai.Client(api_key=key, http_options={'timeout': 600000}), 'status': True, 'uploads': {}, 'timer': None, 'lock': threading.Lock()} for key in PAID_KEYS}
 ALL_API_KEYS = FREE_API_KEYS | PAID_API_KEYS
 
 STATUS_LOCK = threading.Lock()
@@ -78,9 +81,9 @@ def get_key_from_client(client):
 
 def upload_file(client, local_path):
     key = get_key_from_client(client)
+
     with STATUS_LOCK:
         upload_videos = ALL_API_KEYS[key]['uploads']
-        video_file = None
 
         if local_path in upload_videos.keys():
             cloud_name = upload_videos[local_path]["cloud_name"]
@@ -88,17 +91,31 @@ def upload_file(client, local_path):
                 cloud_file = client.files.get(name=cloud_name)
                 if cloud_file.state and cloud_file.state.name == "ACTIVE":
                     video_file = cloud_file
+                    return video_file
                 else:
                     upload_videos.pop(local_path)
             except Exception as e:
                 upload_videos.pop(local_path)
 
-        if not video_file:
+    try_count = 0
+    while True:
+        try:
             video_file = client.files.upload(file=local_path)
-            upload_videos[local_path] = {"cloud_name": video_file.name}
-            upload_videos_file = f"UploadVideos/{key}.json"
-            with open(upload_videos_file, "w") as f:
-                json.dump(upload_videos, f, indent=4)
+            break
+        except Exception as e:
+            try_count += 1
+            if try_count >= 3:
+                return None
+            print(f'Upload failed: {get_key_from_client(client)}, try again after several minutes.')
+            time.sleep(120)
+
+    with STATUS_LOCK:
+        upload_videos = ALL_API_KEYS[key]['uploads']
+
+        upload_videos[local_path] = {"cloud_name": video_file.name}
+        upload_videos_file = f"UploadVideos/{key}.json"
+        with open(upload_videos_file, "w") as f:
+            json.dump(upload_videos, f, indent=4)
 
     # Poll until the video file is completely processed (state becomes ACTIVE).
     while not video_file.state or video_file.state.name != "ACTIVE":
@@ -146,7 +163,7 @@ def send_request(client, model, contents, config):
             )
             break
         except Exception as e:
-            print('Request failed, try to use another key.')
+            print(f'Request failed: {get_key_from_client(client)}, try again after several minutes.')
             try_counter += 1
             if try_counter >= 10:
                 feedback(get_key_from_client(client))

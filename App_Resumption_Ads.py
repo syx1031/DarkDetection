@@ -10,7 +10,7 @@ from utils import send_request
 # Define a function that the model can call to control smart lights
 Recheck_App_Resumption_Ads = {
     "name": "Recheck_App_Resumption_Ads",
-    "description": "Provide a more detailed analysis of the events that occurred within 3 seconds before the user left the app and within 3 seconds after they returned to the app. Use start_time as the time when the user left the app and end_time as the time when the user returned.",
+    "description": "Provide a more detailed analysis of the events that occurred within 3 seconds before the user left the app and within 3 seconds after they returned to the app. Use start_time as the time when the user left the app and end_time as the time when the user returned. Both parameters 'start_time' and 'end_time' should be in format 'mm:ss'.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -28,7 +28,7 @@ Recheck_App_Resumption_Ads = {
     },
 }
 
-recheck_prompt = '''Recheck: If you decide that "App Resumption Ads" occurred, then for each pair of timestamps identified in "Decision", call the function "Recheck_App_Resumption_Ads". Use start_time as the time when the user left the app and end_time as the time when the user returned.
+recheck_prompt = '''Recheck: If you decide that "App Resumption Ads" occurred, then for each pair of timestamps identified in "Decision", call the function "Recheck_App_Resumption_Ads". Use start_time as the time when the user left the app and end_time as the time when the user returned. Note: Both parameters 'start_time' and 'end_time' should be in format 'mm:ss'.
 Revise: For each time period in which you requested a function "Recheck_App_Resumption_Ads" call, list both your prior judgment on the presence of App Resumption Ads and the judgment returned by the function call. If there is any discrepancy between the two, you should revise your decision based the result of the function call.
 '''
 
@@ -100,7 +100,7 @@ def Actual_Function_Recheck_App_Resumption_Ads(client: genai.client, video: type
         config=config,
     )
 
-    if not response:
+    if not response or not response.text:
         return None
 
     return response.text

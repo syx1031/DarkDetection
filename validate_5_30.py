@@ -9,8 +9,10 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 import time
 import json
 import math
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 from tqdm import tqdm
+import argparse
 
 import App_Resumption_Ads
 from utils import upload_file, send_request, get_client, dump_upload_files
@@ -185,145 +187,34 @@ index_map = {
 available = ''.join(index_map.values())
 all_labels = list(available)
 
-# Configure the client and tools
-# client = genai.Client(api_key="AIzaSyD6ClWdvvtGbm600-BvopMy4vzkEkqkedI")
 
-# get videos and ground truth
-ground_truth = {}
+def detection(local_path, app_gt, candidateCount):
+    broken_client = False
 
-gt_videos = "E:\\DarkDetection\\dataset\\syx\\us"
-gt_file = "E:\\DarkDetection\\dataset\\syx\\ground_truth_syx_us.xlsx"
-# 读取 Excel 文件（默认读取第一张表）
-gt_df = pd.read_excel(gt_file)
-
-# 遍历每一行（从第一行数据开始，不包括表头）
-# 获取所有唯一的序号（按顺序去重）
-unique_ids = gt_df['appid'].drop_duplicates().tolist()
-
-def unavailable_str(element):
-    # 转换为字符串并去除空白
-    str_value = str(element).strip()
-
-    # 判断是否是非空字符串
-    if str_value in ['', 'nan']:
-        return True
-    else:
-        return False
-
-for uid in unique_ids[:5]:
-    # 找出这个序号对应的所有行
-    group = gt_df[gt_df['appid'] == uid]
-
-    # 外层处理：第一行
-    first_row = group.iloc[0]
-    if first_row.get('能否测试') == '可测试' and glob.glob(os.path.join(gt_videos, f'{uid}-尚宇轩.*')):
-        app_gt = {'video': glob.glob(os.path.join(gt_videos, f'{uid}-尚宇轩.*'))[0]}
-
-        Home_Resumption_Ads = True if not unavailable_str(first_row.get('1.1.1home indicator广告标记')) and not unavailable_str(first_row.get('1.1.2发生时间')) else False
-        Control_Center_Resumption_Ads = True if not unavailable_str(first_row.get('1.2.1下拉菜单广告标记')) and not unavailable_str(first_row.get('1.2.2发生时间')) else False
-        app_gt["App Resumption Ads"] = Home_Resumption_Ads or Control_Center_Resumption_Ads
-
-        Unexpected_Full_Screen_Ads = True if not unavailable_str(first_row.get('1.3.1意外的广告标记')) and not unavailable_str(first_row.get('1.3.2发生时间')) else False
-        app_gt["Unexpected Full-Screen Ads"] = Unexpected_Full_Screen_Ads
-
-        Barter_for_Ad_Free_Privilege = True if not unavailable_str(first_row.get('4.2.1免费去广告标记')) and not unavailable_str(first_row.get('4.2.2发生时间')) else False
-        app_gt["Barter for Ad-Free Privilege"] = Barter_for_Ad_Free_Privilege
-
-        Paid_Ad_Removal = True if not unavailable_str(first_row.get('4.1.1付费去除广告标记')) and not unavailable_str(first_row.get('4.1.2发生时间')) else False
-        app_gt['Paid Ad Removal'] = Paid_Ad_Removal
-
-        Reward_Based_Ads = True if not unavailable_str(first_row.get('6.1通过观看广告获取利益')) and not unavailable_str(first_row.get('6.2发生时间')) else False
-        app_gt['Reward-Based Ads'] = Reward_Based_Ads
-
-        Increased_Ads_with_Use = True if not unavailable_str(first_row.get('5.1杀熟，区别对待老用户标记')) and not unavailable_str(first_row.get('5.2发生时间')) else False
-        app_gt['Increased Ads with Use'] = Increased_Ads_with_Use
-
-        Auto_Redirect_Ads = False
-        Ad_Without_Exit_Option = False
-        Ad_Closure_Failure = False
-        Gesture_Induced_Ad_Redirection = False
-        Button_Covering_Ads = False
-        Multiple_Close_Buttons = False
-        Bias_Driven_UI_Ads = False
-        Disguised_Ads = False
-
-        # 内层处理：所有该序号的行
-        for _, row in group.iterrows():
-            Auto_Redirect_Ads = Auto_Redirect_Ads or (True if not unavailable_str(row.get('5.1自动跳转的广告标记')) and not unavailable_str(row.get('5.2发生时间.1')) else False)
-            Ad_Without_Exit_Option = Ad_Without_Exit_Option or (True if not unavailable_str(row.get('4.4.1没有关闭按钮的广告标记')) and not unavailable_str(row.get('4.4.2发生时间')) else False)
-            Ad_Closure_Failure = Ad_Closure_Failure or (True if not unavailable_str(row.get('4.2.1关不掉的广告标记')) and not unavailable_str(row.get('4.2.2发生时间.1')) else False)
-
-            Shake_to_Open = True if not unavailable_str(row.get('3.1"摇一摇"广告标记')) and not unavailable_str(row.get('3.1.1发生时间')) else False
-            Hover_to_Open = True if not unavailable_str(row.get('3.3.1遮挡home indicator的广告标记')) and not unavailable_str(row.get('3.3.1发生时间')) else False
-            Gesture_Induced_Ad_Redirection = Gesture_Induced_Ad_Redirection or Shake_to_Open or Hover_to_Open
-
-            Home_Indicator_Covering_Ads = True if not unavailable_str(row.get('3.3.1遮挡home indicator的广告标记')) and not unavailable_str(row.get('3.3.1发生时间')) else False
-            Other_Button_Covering_Ads = True if not unavailable_str(row.get('3.4.1遮挡按钮的广告标记')) and not unavailable_str(row.get('3.4.2遮挡了什么按钮')) else False
-            Button_Covering_Ads = Button_Covering_Ads or Home_Indicator_Covering_Ads or Other_Button_Covering_Ads
-
-            Multiple_Close_Buttons = Multiple_Close_Buttons or (True if not unavailable_str(row.get('4.1关闭按钮设计糟糕的广告标记')) else False)
-            Bias_Driven_UI_Ads = Bias_Driven_UI_Ads or (True if not unavailable_str(row.get('6.1.1设计不对称的UI标记')) and not unavailable_str(row.get('6.1.2发生时间')) else False)
-            Disguised_Ads = Disguised_Ads or (True if not unavailable_str(row.get('6.2.1伪装成弹窗的UI标记')) and not unavailable_str(row.get('6.2.2发生时间')) else False)
-
-        app_gt["Auto-Redirect Ads"] = Auto_Redirect_Ads
-        app_gt["Ad Without Exit Options"] = Ad_Without_Exit_Option
-        app_gt["Ad Closure Failure"] = Ad_Closure_Failure
-        app_gt["Gesture-Induced Ad Redirection"] = Gesture_Induced_Ad_Redirection
-        app_gt["Button-Covering Ads"] = Button_Covering_Ads
-        app_gt["Multiple Close Buttons"] = Multiple_Close_Buttons
-        app_gt["Bias-Driven UI Ads"] = Bias_Driven_UI_Ads
-        app_gt["Disguised Ads"] = Disguised_Ads
-
-        app_gt["Long Ad/Many Ads"] = False
-
-        no_dark_pattern = True
-        for key in index_map.keys():
-            if key != "No Dark Pattern" and app_gt[key]:
-                no_dark_pattern = False
-        app_gt["No Dark Pattern"] = no_dark_pattern
-
-        ground_truth[uid] = app_gt
-
-result_dict = {}
-y_true, y_pred = [], []
-
-for key, app_gt in ground_truth.items():
-    # if app_gt["App Resumption Ads"] == False:
-    #     continue
-
-    local_path = app_gt["video"]
-    result_dict[local_path] = {}
+    result_dict = {}
 
     client = get_client()
     video_file = upload_file(client, local_path)
+    if not video_file:
+        result_dict['broken_file_upload'] = True
+        return result_dict
 
-    candidateCount = 5
     pred_vote = {x: 0 for x in index_map.values()}
-    result_dict[local_path]["candidate"] = []
+    result_dict["candidate"] = []
     for cand in range(candidateCount):
-        broken_client = True
+        if broken_client:
+            continue
 
         candidate = {}
         tools = types.Tool(function_declarations=[App_Resumption_Ads.Recheck_App_Resumption_Ads])
         config = types.GenerateContentConfig(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=True,
-                thinking_budget=24576, # max thinking
+                thinking_budget=24576,  # max thinking
             ),
             tools=[tools]
             # candidateCount=5,
         )
-        # contents = [
-        #     types.Content(
-        #         role="user",
-        #         parts=[
-        #             types.Part(
-        #
-        #             ),
-        #             types.Part(text=prompt)
-        #         ]
-        #     )
-        # ]
         contents = [video_file, prompt]
 
         # Send request with function declarations
@@ -338,16 +229,7 @@ for key, app_gt in ground_truth.items():
         if not response:
             broken_client = True
 
-        # finish_reason = response.candidates[0].finish_reason.name
-        # if finish_reason in ['FINISH_REASON_UNSPECIFIED', 'STOP']:
-        #     print('模型输出正常结束')
-        # elif finish_reason in ['MAX_TOKENS']:
-        #     print('模型输出达到Token数量上限')
-        # else:
-        #     print('模型输出因为其他原因结束：' + finish_reason)
-
         candidate["function_call"] = []
-
         max_calls = 4
         called = 0
 
@@ -357,18 +239,23 @@ for key, app_gt in ground_truth.items():
 
             function_calls = response.function_calls
             for function_call in function_calls:
-                print(f"Function to call: {function_call.name}")
-                print(f"Arguments: {function_call.args}")
+                # print(f"Function to call: {function_call.name}")
+                # print(f"Arguments: {function_call.args}")
                 called += 1
 
                 func_result = "The function call result is temporarily unavailable."
                 if function_call.name == "Recheck_App_Resumption_Ads":
                     new_args = App_Resumption_Ads.get_earlier_latter(local_path, **function_call.args)
-                    call_result = App_Resumption_Ads.Actual_Function_Recheck_App_Resumption_Ads(client=client, video=video_file, **new_args)
+                    call_result = App_Resumption_Ads.Actual_Function_Recheck_App_Resumption_Ads(client=client,
+                                                                                                video=video_file,
+                                                                                                **new_args)
                     if call_result:
                         func_result = call_result
+                    else:
+                        broken_client = True
 
-                candidate["function_call"].append({"name": function_call.name, "args": function_call.args, "response": func_result})
+                candidate["function_call"].append(
+                    {"name": function_call.name, "args": function_call.args, "response": func_result})
 
                 function_response_part = types.Part.from_function_response(
                     name=function_call.name,
@@ -381,7 +268,7 @@ for key, app_gt in ground_truth.items():
                 function_call_config = types.GenerateContentConfig(
                     thinking_config=types.ThinkingConfig(
                         include_thoughts=True,
-                        thinking_budget=24576, # max thinking
+                        thinking_budget=24576,  # max thinking
                     ),
                 )
             else:
@@ -399,9 +286,13 @@ for key, app_gt in ground_truth.items():
 
         if not response:
             continue
+        elif not response.text:
+            candidate["finish_reason"] = response.candidates[0].finish_reason.name
+            result_dict["candidate"].append(candidate)
+            continue
 
-        print("Here is the response:")
-        print(response.text)
+        # print("Here is the response:")
+        # print(response.text)
 
         result = response.text
         candidate["first_response"] = result
@@ -428,7 +319,7 @@ for key, app_gt in ground_truth.items():
             pred_this_candidate = result.strip().split()
             success = True
         else:
-            print('格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...')
+            # print('格式检查出错，模型可能输出了推理过程，正在尝试从输出中提取最终结果...')
 
             extract_response = send_request(
                 client=client,
@@ -438,17 +329,20 @@ for key, app_gt in ground_truth.items():
                 contents=result,
             )
             if not extract_response:
+                broken_client = True
                 continue
 
             extract_result = extract_response.text
-            print("Here is the extracted result from original result:")
-            print(extract_result)
+            # print("Here is the extracted result from original result:")
+            # print(extract_result)
             candidate["extract_response"] = extract_result
 
             if extract_result == "N/A":
-                print("Gemini没能从输出中提取到有效的结果，请检查模型输出的最后一段或最后一句是否总结了发现的dark pattern")
+                # print("Gemini没能从输出中提取到有效的结果，请检查模型输出的最后一段或最后一句是否总结了发现的dark pattern")
+                pass
             elif not format_check(extract_result, valid_letters):
-                print("Gemini再次提取的结果格式检查也出错")
+                # print("Gemini再次提取的结果格式检查也出错")
+                pass
             else:
                 pred_this_candidate = extract_result.strip().split()
                 success = True
@@ -457,7 +351,13 @@ for key, app_gt in ground_truth.items():
             for key_temp in pred_this_candidate:
                 pred_vote[key_temp] += 1
 
-        result_dict[local_path]["candidate"].append(candidate)
+        result_dict["candidate"].append(candidate)
+
+    if broken_client:
+        result_dict["broken_client"] = True
+        return result_dict
+
+    result_dict["pred_vote"] = pred_vote
 
     pred = []
     for key_temp, value in pred_vote.items():
@@ -469,27 +369,21 @@ for key, app_gt in ground_truth.items():
         pred.remove("D")
 
     gt = [index_map[dp] for dp in app_gt.keys() if dp != "video" and app_gt[dp]]
-    print(f"Ground truth for video {app_gt['video']}:")
+    # print(f"Ground truth for video {app_gt['video']}:")
     gt_all = ''
     for gt_label in gt:
-        print(gt_label + ' ', end='')
+    #     print(gt_label + ' ', end='')
         gt_all += gt_label + ' '
-    print('\n')
-    result_dict[local_path]["ground_truth"] = gt_all
+    # print('\n')
+    result_dict["ground_truth"] = gt_all
 
-    print("Overall, Gemini determines below dark patterns:")
+    # print("Overall, Gemini determines below dark patterns:")
     final_pred = ''
     for item in pred:
-        print(item + ' ', end='')
+    #     print(item + ' ', end='')
         final_pred += item + ' '
-    print('\n')
-    result_dict[local_path]["final_pred"] = final_pred
-
-    print('And Gemini is hesitating on:')
-    for key_temp, value in pred_vote.items():
-        if value in [math.ceil(candidateCount / 2), math.floor(candidateCount / 2)]:
-            print(key_temp + ' ', end='')
-    print('\n')
+    # print('\n')
+    result_dict["final_pred"] = final_pred
 
     def to_binary_vector(label_list, whole_labels):
         return [1 if label in label_list else 0 for label in whole_labels]
@@ -497,69 +391,239 @@ for key, app_gt in ground_truth.items():
     y_true_this_sample = [to_binary_vector(gt, all_labels)]
     y_pred_this_sample = [to_binary_vector(pred, all_labels)]
 
-    precision = precision_score(y_true_this_sample, y_pred_this_sample, average='samples')
-    recall = recall_score(y_true_this_sample, y_pred_this_sample, average='samples')
-    f1 = f1_score(y_true_this_sample, y_pred_this_sample, average='samples')
+    return pred, pred_vote, y_true_this_sample, y_pred_this_sample, result_dict
 
-    print(f"Precision: {precision:.3f}")
-    print(f"Recall:    {recall:.3f}")
-    print(f"F1-score:  {f1:.3f}")
-    result_dict[local_path]["metrics"] = {'Precision': precision, 'Recall': recall, 'F1-score': f1}
+    # print('And Gemini is hesitating on:')
+    # for key_temp, value in pred_vote.items():
+    #     if value in [math.ceil(candidateCount / 2), math.floor(candidateCount / 2)]:
+    #         print(key_temp + ' ', end='')
+    # print('\n')
 
-    y_true.extend(y_true_this_sample)
-    y_pred.extend(y_pred_this_sample)
+    #
+    # precision = precision_score(y_true_this_sample, y_pred_this_sample, average='samples')
+    # recall = recall_score(y_true_this_sample, y_pred_this_sample, average='samples')
+    # f1 = f1_score(y_true_this_sample, y_pred_this_sample, average='samples')
+    #
+    # print(f"Precision: {precision:.3f}")
+    # print(f"Recall:    {recall:.3f}")
+    # print(f"F1-score:  {f1:.3f}")
+    # result_dict[local_path]["metrics"] = {'Precision': precision, 'Recall': recall, 'F1-score': f1}
+    #
+    # y_true.extend(y_true_this_sample)
+    # y_pred.extend(y_pred_this_sample)
 
-print("All average metrics:")
-result_dict["all_average_metrics"] = {}
 
-precision_samples = precision_score(y_true, y_pred, average='samples')
-recall_samples = recall_score(y_true, y_pred, average='samples')
-f1_samples = f1_score(y_true, y_pred, average='samples')
-print('samples:')
-print(f"Average Precision: {precision_samples:.3f}")
-print(f"Average Recall:    {recall_samples:.3f}")
-print(f"Average F1-score:  {f1_samples:.3f}")
-result_dict["all_average_metrics"]["samples"] = {'Precision': precision_samples, 'Recall': recall_samples, 'F1-score': f1_samples}
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', type=str, default='None')
+    args = parser.parse_args()
 
-precision_micro = precision_score(y_true, y_pred, average='micro')
-recall_micro = recall_score(y_true, y_pred, average='micro')
-f1_micro = f1_score(y_true, y_pred, average='micro')
-print('micro:')
-print(f"Average Precision: {precision_micro:.3f}")
-print(f"Average Recall:    {recall_micro:.3f}")
-print(f"Average F1-score:  {f1_micro:.3f}")
-result_dict["all_average_metrics"]["micro"] = {'Precision': precision_micro, 'Recall': recall_micro, 'F1-score': f1_micro}
+    if args.c != "None":
+        with open(args.c, "r") as f:
+            old_result_dict = json.load(f)
 
-# precision_macro = precision_score(y_true, y_pred, average='macro')
-# recall_macro = recall_score(y_true, y_pred, average='macro')
-# f1_macro = f1_score(y_true, y_pred, average='macro')
-# print('macro:')
-# print(f"Average Precision: {precision_macro:.3f}")
-# print(f"Average Recall:    {recall_macro:.3f}")
-# print(f"Average F1-score:  {f1_macro:.3f}")
-# result_dict["all_average_metrics"]["macro"] = {'Precision': precision_macro, 'Recall': recall_macro, 'F1-score': f1_macro}
+    # get videos and ground truth
+    ground_truth = {}
 
-precision_per = precision_score(y_true, y_pred, average=None, zero_division=np.nan)
-recall_per = recall_score(y_true, y_pred, average=None, zero_division=np.nan)
-f1_per = f1_score(y_true, y_pred, average=None, zero_division=np.nan)
-result_dict["all_average_metrics"]["per_class"] = {}
-for i in range(len(all_labels)):
-    label = all_labels[i]
-    key = next(k for k, v in index_map.items() if v == label)
-    result_dict["all_average_metrics"]["per_class"][key] = {'Precision': precision_per[i], 'Recall': recall_per[i], 'F1-score': f1_per[i]}
+    gt_videos = "E:\\DarkDetection\\dataset\\syx\\us"
+    gt_file = "E:\\DarkDetection\\dataset\\syx\\ground_truth_syx_us.xlsx"
+    # 读取 Excel 文件（默认读取第一张表）
+    gt_df = pd.read_excel(gt_file)
 
-# ===== 重新计算宏平均（忽略无效类）=====
-precision_macro = np.nanmean(precision_per)
-recall_macro = np.nanmean(recall_per)
-f1_macro = np.nanmean(f1_per)
-print('macro:')
-print(f"Average Precision: {precision_macro:.3f}")
-print(f"Average Recall:    {recall_macro:.3f}")
-print(f"Average F1-score:  {f1_macro:.3f}")
-result_dict["all_average_metrics"]["macro"] = {'Precision': precision_macro, 'Recall': recall_macro, 'F1-score': f1_macro}
+    # 遍历每一行（从第一行数据开始，不包括表头）
+    # 获取所有唯一的序号（按顺序去重）
+    unique_ids = gt_df['appid'].drop_duplicates().tolist()
 
-dump_upload_files()
+    def unavailable_str(element):
+        # 转换为字符串并去除空白
+        str_value = str(element).strip()
 
-result_file = "result.json"
-with open(result_file, "w") as f:
-    json.dump(result_dict, f, indent=4)
+        # 判断是否是非空字符串
+        if str_value in ['', 'nan']:
+            return True
+        else:
+            return False
+
+    for uid in unique_ids[:40]:
+        # 找出这个序号对应的所有行
+        group = gt_df[gt_df['appid'] == uid]
+
+        # 外层处理：第一行
+        first_row = group.iloc[0]
+        if first_row.get('能否测试') == '可测试' and glob.glob(os.path.join(gt_videos, f'{uid}-尚宇轩.*')):
+            app_gt = {'video': glob.glob(os.path.join(gt_videos, f'{uid}-尚宇轩.*'))[0]}
+
+            Home_Resumption_Ads = True if not unavailable_str(first_row.get('1.1.1home indicator广告标记')) and not unavailable_str(first_row.get('1.1.2发生时间')) else False
+            Control_Center_Resumption_Ads = True if not unavailable_str(first_row.get('1.2.1下拉菜单广告标记')) and not unavailable_str(first_row.get('1.2.2发生时间')) else False
+            app_gt["App Resumption Ads"] = Home_Resumption_Ads or Control_Center_Resumption_Ads
+
+            Unexpected_Full_Screen_Ads = True if not unavailable_str(first_row.get('1.3.1意外的广告标记')) and not unavailable_str(first_row.get('1.3.2发生时间')) else False
+            app_gt["Unexpected Full-Screen Ads"] = Unexpected_Full_Screen_Ads
+
+            Barter_for_Ad_Free_Privilege = True if not unavailable_str(first_row.get('4.2.1免费去广告标记')) and not unavailable_str(first_row.get('4.2.2发生时间')) else False
+            app_gt["Barter for Ad-Free Privilege"] = Barter_for_Ad_Free_Privilege
+
+            Paid_Ad_Removal = True if not unavailable_str(first_row.get('4.1.1付费去除广告标记')) and not unavailable_str(first_row.get('4.1.2发生时间')) else False
+            app_gt['Paid Ad Removal'] = Paid_Ad_Removal
+
+            Reward_Based_Ads = True if not unavailable_str(first_row.get('6.1通过观看广告获取利益')) and not unavailable_str(first_row.get('6.2发生时间')) else False
+            app_gt['Reward-Based Ads'] = Reward_Based_Ads
+
+            Increased_Ads_with_Use = True if not unavailable_str(first_row.get('5.1杀熟，区别对待老用户标记')) and not unavailable_str(first_row.get('5.2发生时间')) else False
+            app_gt['Increased Ads with Use'] = Increased_Ads_with_Use
+
+            Auto_Redirect_Ads = False
+            Ad_Without_Exit_Option = False
+            Ad_Closure_Failure = False
+            Gesture_Induced_Ad_Redirection = False
+            Button_Covering_Ads = False
+            Multiple_Close_Buttons = False
+            Bias_Driven_UI_Ads = False
+            Disguised_Ads = False
+
+            # 内层处理：所有该序号的行
+            for _, row in group.iterrows():
+                Auto_Redirect_Ads = Auto_Redirect_Ads or (True if not unavailable_str(row.get('5.1自动跳转的广告标记')) and not unavailable_str(row.get('5.2发生时间.1')) else False)
+                Ad_Without_Exit_Option = Ad_Without_Exit_Option or (True if not unavailable_str(row.get('4.4.1没有关闭按钮的广告标记')) and not unavailable_str(row.get('4.4.2发生时间')) else False)
+                Ad_Closure_Failure = Ad_Closure_Failure or (True if not unavailable_str(row.get('4.2.1关不掉的广告标记')) and not unavailable_str(row.get('4.2.2发生时间.1')) else False)
+
+                Shake_to_Open = True if not unavailable_str(row.get('3.1"摇一摇"广告标记')) and not unavailable_str(row.get('3.1.1发生时间')) else False
+                Hover_to_Open = True if not unavailable_str(row.get('3.3.1遮挡home indicator的广告标记')) and not unavailable_str(row.get('3.3.1发生时间')) else False
+                Gesture_Induced_Ad_Redirection = Gesture_Induced_Ad_Redirection or Shake_to_Open or Hover_to_Open
+
+                Home_Indicator_Covering_Ads = True if not unavailable_str(row.get('3.3.1遮挡home indicator的广告标记')) and not unavailable_str(row.get('3.3.1发生时间')) else False
+                Other_Button_Covering_Ads = True if not unavailable_str(row.get('3.4.1遮挡按钮的广告标记')) and not unavailable_str(row.get('3.4.2遮挡了什么按钮')) else False
+                Button_Covering_Ads = Button_Covering_Ads or Home_Indicator_Covering_Ads or Other_Button_Covering_Ads
+
+                Multiple_Close_Buttons = Multiple_Close_Buttons or (True if not unavailable_str(row.get('4.1关闭按钮设计糟糕的广告标记')) else False)
+                Bias_Driven_UI_Ads = Bias_Driven_UI_Ads or (True if not unavailable_str(row.get('6.1.1设计不对称的UI标记')) and not unavailable_str(row.get('6.1.2发生时间')) else False)
+                Disguised_Ads = Disguised_Ads or (True if not unavailable_str(row.get('6.2.1伪装成弹窗的UI标记')) and not unavailable_str(row.get('6.2.2发生时间')) else False)
+
+            app_gt["Auto-Redirect Ads"] = Auto_Redirect_Ads
+            app_gt["Ad Without Exit Options"] = Ad_Without_Exit_Option
+            app_gt["Ad Closure Failure"] = Ad_Closure_Failure
+            app_gt["Gesture-Induced Ad Redirection"] = Gesture_Induced_Ad_Redirection
+            app_gt["Button-Covering Ads"] = Button_Covering_Ads
+            app_gt["Multiple Close Buttons"] = Multiple_Close_Buttons
+            app_gt["Bias-Driven UI Ads"] = Bias_Driven_UI_Ads
+            app_gt["Disguised Ads"] = Disguised_Ads
+
+            app_gt["Long Ad/Many Ads"] = False
+
+            no_dark_pattern = True
+            for key in index_map.keys():
+                if key != "No Dark Pattern" and app_gt[key]:
+                    no_dark_pattern = False
+            app_gt["No Dark Pattern"] = no_dark_pattern
+
+            ground_truth[uid] = app_gt
+
+    ground_truth_temp = ground_truth.copy()
+    if args.c != "None":
+        for uid, app_gt in ground_truth_temp.items():
+            if app_gt["video"] in old_result_dict.keys():
+                detect_status = old_result_dict[app_gt["video"]]
+                if "broken_client" not in detect_status.keys() and "broken_file_upload" not in detect_status:
+                    ground_truth.pop(uid)
+
+    candidateCount = 5
+    result_dict = {}
+    y_true, y_pred = [], []
+    RESULT_LOCK = threading.Lock()
+
+    if args.c != "None":
+        result_dict = old_result_dict
+        y_true = old_result_dict["y_true"]
+        y_pred = old_result_dict["y_pred"]
+
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = {executor.submit(detection, app_gt["video"], app_gt, candidateCount): key for key, app_gt in ground_truth.items()}
+        for future in tqdm(as_completed(futures), total=len(futures)):
+            pred, pred_vote, y_true_this_sample, y_pred_this_sample, result_dict_this_sample = future.result()
+            original_key = futures[future]
+            app_gt = ground_truth[original_key]
+            local_path = app_gt["video"]
+
+            with RESULT_LOCK:
+                if "broken_client" in result_dict_this_sample.keys() or "broken_file_upload" in result_dict_this_sample.keys():
+                    print(f"Gemini cannot respond with this api on video {app_gt['video']}")
+                    result_dict[local_path] = result_dict_this_sample
+                    continue
+
+                print(f"Ground truth for video {app_gt['video']}:")
+                print(result_dict_this_sample["ground_truth"])
+
+                print("Overall, Gemini determines below dark patterns:")
+                print(result_dict_this_sample["final_pred"])
+
+                print('And Gemini is hesitating on:')
+                for key_temp, value in pred_vote.items():
+                    if value in [math.ceil(candidateCount / 2), math.floor(candidateCount / 2)]:
+                        print(key_temp + ' ', end='')
+                print('\n')
+
+                precision = precision_score(y_true_this_sample, y_pred_this_sample, average='samples')
+                recall = recall_score(y_true_this_sample, y_pred_this_sample, average='samples')
+                f1 = f1_score(y_true_this_sample, y_pred_this_sample, average='samples')
+
+                print(f"Precision: {precision:.3f}")
+                print(f"Recall:    {recall:.3f}")
+                print(f"F1-score:  {f1:.3f}")
+                result_dict_this_sample["metrics"] = {'Precision': precision, 'Recall': recall, 'F1-score': f1}
+
+                y_true.extend(y_true_this_sample)
+                y_pred.extend(y_pred_this_sample)
+                result_dict[local_path] = result_dict_this_sample
+
+    result_dict["y_true"] = y_true
+    result_dict["y_pred"] = y_pred
+
+    print("All average metrics:")
+    result_dict["all_average_metrics"] = {}
+
+    precision_samples = precision_score(y_true, y_pred, average='samples')
+    recall_samples = recall_score(y_true, y_pred, average='samples')
+    f1_samples = f1_score(y_true, y_pred, average='samples')
+    print('samples:')
+    print(f"Average Precision: {precision_samples:.3f}")
+    print(f"Average Recall:    {recall_samples:.3f}")
+    print(f"Average F1-score:  {f1_samples:.3f}")
+    result_dict["all_average_metrics"]["samples"] = {'Precision': precision_samples, 'Recall': recall_samples, 'F1-score': f1_samples}
+
+    precision_micro = precision_score(y_true, y_pred, average='micro')
+    recall_micro = recall_score(y_true, y_pred, average='micro')
+    f1_micro = f1_score(y_true, y_pred, average='micro')
+    print('micro:')
+    print(f"Average Precision: {precision_micro:.3f}")
+    print(f"Average Recall:    {recall_micro:.3f}")
+    print(f"Average F1-score:  {f1_micro:.3f}")
+    result_dict["all_average_metrics"]["micro"] = {'Precision': precision_micro, 'Recall': recall_micro, 'F1-score': f1_micro}
+
+    precision_per = precision_score(y_true, y_pred, average=None, zero_division=np.nan)
+    recall_per = recall_score(y_true, y_pred, average=None, zero_division=np.nan)
+    f1_per = f1_score(y_true, y_pred, average=None, zero_division=np.nan)
+    result_dict["all_average_metrics"]["per_class"] = {}
+    for i in range(len(all_labels)):
+        label = all_labels[i]
+        key = next(k for k, v in index_map.items() if v == label)
+        result_dict["all_average_metrics"]["per_class"][key] = {'Precision': precision_per[i], 'Recall': recall_per[i], 'F1-score': f1_per[i]}
+
+    # ===== 重新计算宏平均（忽略无效类）=====
+    precision_macro = np.nanmean(precision_per)
+    recall_macro = np.nanmean(recall_per)
+    f1_macro = np.nanmean(f1_per)
+    print('macro:')
+    print(f"Average Precision: {precision_macro:.3f}")
+    print(f"Average Recall:    {recall_macro:.3f}")
+    print(f"Average F1-score:  {f1_macro:.3f}")
+    result_dict["all_average_metrics"]["macro"] = {'Precision': precision_macro, 'Recall': recall_macro, 'F1-score': f1_macro}
+
+    dump_upload_files()
+
+    result_file = "result.json"
+    with open(result_file, "w") as f:
+        json.dump(result_dict, f, indent=4)
+
+
+if __name__ == "__main__":
+    main()
