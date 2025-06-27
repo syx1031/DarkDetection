@@ -1,4 +1,5 @@
 from google.genai import types
+from types import SimpleNamespace
 from google import genai
 import time
 import random
@@ -30,6 +31,15 @@ def seconds_to_mmss(seconds):
     return f"{int(minutes):02d}:{int(seconds):02d}"
 
 
+def generate_part(content, content_type):
+    if content_type == "t":
+        return types.Part(text=content)
+    elif content_type == "i":
+        return types.Part.from_bytes(data=content, mime_type='image/jpeg')
+    elif content_type == "v":
+        return types.Part(file_data=types.FileData(file_uri=content, mime_type='video/mp4'))
+
+
 FREE_KEYS = [
     "AIzaSyBWdjtqfv8QMBpqaI7smQAArpL_I5dJAsU",
     "AIzaSyAr4kAGPP3V9MEjbFddzBU1JO6WZ7xNVGw",
@@ -42,6 +52,19 @@ FREE_KEYS = [
     "AIzaSyAWUS0RPKsdFTAwsKJFrV1AiiCB5ML3SQ8",
     "AIzaSyB4w4chjyM8Pn81DmC-eLjMWgw3zttb8sY",
     "AIzaSyD22lWTZq6SPGgeQicUYic8G1oukNnntxo",
+    "AIzaSyA-bxStNkKeadvr4bsd3cd1wBJCpCTrrzA",
+    "AIzaSyB_K--N-6ZmALvHHy1CAoSAGzEK-ZOhGJo",
+    "AIzaSyB6mAvrTP7RkT5I7_Q4obsOqMh4e8PdwVQ",
+    "AIzaSyDRAssxVtCecUgKS4yKzpqvdxUS6hhvTj0",
+    "AIzaSyAtF3FGFiYj0QNNQ2elUiHcVOQJ0kJEpWU",
+    "AIzaSyCFfoGAC4_ll41uWki90MF2AKtkP2AUx1E",
+    "AIzaSyCnps8AgUcg7xy8JFCJcAYHaNUU82UXAeU",
+    "AIzaSyDpTUAjosqMrXZo2jbOyCeOehw_4OCbf6I",
+    "AIzaSyCBbmC5ScZODwgF9gpr_egmJ1K_pdYC3Uc",
+    "AIzaSyDYMd2HNlDMZH7yJKDx16v-SDUralwcBEM",
+    "AIzaSyCIk3IzgIvY1olSbWQc-v_cOGHZkTDm2GM",
+    "AIzaSyBDWZ12GJEBelO8S63lp4YeVzTye92XX1Y",
+    "AIzaSyC8Jdhw8IST_zdcmm95C7fMYYi-XpTeqzA",
 ]
 PAID_KEYS = [
     "AIzaSyDNYdjTbR2MYpnkOE6I2L8SrkBK4be2ndg"
@@ -61,8 +84,24 @@ for key in ALL_API_KEYS.keys():
             ALL_API_KEYS[key]['uploads'] = json.load(f)
 
 
-def get_client():
+def get_client(key=None, local_path=None):
     with STATUS_LOCK:
+        # print(f"{local_path} get client")
+        if key:
+            return ALL_API_KEYS[key]['client']
+
+        # if local_path:
+        #     for key in ALL_API_KEYS.keys():
+        #         upload_videos = ALL_API_KEYS[key]['uploads']
+        #         if local_path in upload_videos.keys() and ALL_API_KEYS[key]['status']:
+        #             try:
+        #                 cloud_name = upload_videos[local_path]["cloud_name"]
+        #                 cloud_file = ALL_API_KEYS[key]['client'].files.get(name=cloud_name)
+        #                 if cloud_file.state and cloud_file.state.name == "ACTIVE":
+        #                     return ALL_API_KEYS[key]['client']
+        #             except Exception as e:
+        #                 pass
+
         """获取一个可用的 API key，如果免费都不可用，则返回付费 key"""
         available_free_apis = [api['client'] for api in FREE_API_KEYS.values() if api['status']]
         available_paid_apis = [api['client'] for api in PAID_API_KEYS.values()]
@@ -83,6 +122,7 @@ def upload_file(client, local_path):
     key = get_key_from_client(client)
 
     with STATUS_LOCK:
+        # print(f"{local_path} test cloud")
         upload_videos = ALL_API_KEYS[key]['uploads']
 
         if local_path in upload_videos.keys():
@@ -105,11 +145,12 @@ def upload_file(client, local_path):
         except Exception as e:
             try_count += 1
             if try_count >= 3:
-                return None
+                raise
             print(f'Upload failed: {get_key_from_client(client)}, try again after several minutes.')
             time.sleep(120)
 
     with STATUS_LOCK:
+        # print(f"{local_path} update upload files")
         upload_videos = ALL_API_KEYS[key]['uploads']
 
         upload_videos[local_path] = {"cloud_name": video_file.name}
@@ -161,20 +202,45 @@ def send_request(client, model, contents, config):
                 contents=contents,
                 config=config,
             )
+            if not response or not response.text:
+                print(f"Response is None from {get_key_from_client(client)}.")
+                response = SimpleNamespace(text="[]")
             break
         except Exception as e:
-            print(f'Request failed: {get_key_from_client(client)}, try again after several minutes.')
+            print(f'Request failed: {get_key_from_client(client)}, try again after several minutes. Detail: {e}')
             try_counter += 1
             if try_counter >= 10:
                 feedback(get_key_from_client(client))
-                return None
+                raise
             time.sleep(120)
 
     return response
 
 
+def get_embed(client, model, contents, config):
+    try_counter = 0
+    while True:
+        try:
+            # Send request with function declarations
+            response = client.models.embed_content(
+                model=model,
+                contents=contents,
+                config=config,
+            )
+            break
+        except Exception as e:
+            print(f'Embed failed: {get_key_from_client(client)}, try again after several minutes. Detail: {e}')
+            try_counter += 1
+            if try_counter >= 10:
+                raise
+            time.sleep(120)
+
+    return response.embeddings[0].values
+
+
 def dump_upload_files():
     with STATUS_LOCK:
+        # print(f"dump files")
         for key in ALL_API_KEYS.keys():
             upload_videos_file = f"UploadVideos/{key}.json"
             with open(upload_videos_file, "w") as f:

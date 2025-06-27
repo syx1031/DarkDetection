@@ -1,7 +1,7 @@
 import cv2
 
 # 打开视频文件
-video_path = 'Unprompted_Intrusive_Ads_(Unexpected_Full-Screen_Ads)_en_1425445169.mp4'
+video_path = 'E:\\DarkDetection\\dataset\\syx\\us\\6453159988-尚宇轩.mp4'
 cap = cv2.VideoCapture(video_path)
 
 # 获取视频信息
@@ -12,7 +12,7 @@ total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
 # 设置输出视频
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # 或 'XVID'
-out = cv2.VideoWriter('Unprompted_Intrusive_Ads_(Unexpected_Full-Screen_Ads)_en_1425445169_with_timestamp.mp4', fourcc, fps, (width, height))
+out = cv2.VideoWriter('E:\\DarkDetection\\Gemini2.5Pro\\local_database\\outside_interface\\6453159988-尚宇轩.mp4', fourcc, fps, (width, height))
 
 frame_idx = 0
 
@@ -30,8 +30,8 @@ while cap.isOpened():
 
     # 设置文字位置（右下角）
     font = cv2.FONT_HERSHEY_SIMPLEX
-    scale = 0.6
-    thickness = 2
+    scale = 1.8
+    thickness = 4
     color = (0, 255, 255)  # 黄色高亮
     text_size, _ = cv2.getTextSize(text, font, scale, thickness)
     x = width - text_size[0] - 10
