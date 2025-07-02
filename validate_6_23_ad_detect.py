@@ -187,7 +187,7 @@ def get_ground_truth():
     # 获取所有唯一的序号（按顺序去重）
     unique_ids = gt_df['appid'].drop_duplicates().tolist()
 
-    for uid in unique_ids[:40]:
+    for uid in unique_ids[40:80]:
         # 找出这个序号对应的所有行
         group = gt_df[gt_df['appid'] == uid]
 
@@ -230,6 +230,15 @@ def get_ground_truth():
                     first_row.get('4.1.2发生时间')):
                 Paid_Ad_Removal_per_datapoint = extract_datapoints(first_row.get('4.1.2发生时间'))
             app_gt['Paid Ad Removal']['instance-level'] = Paid_Ad_Removal_per_datapoint
+
+            Reward_Based_Ads = True if not unavailable_str(
+                first_row.get('6.1通过观看广告获取利益')) and not unavailable_str(
+                first_row.get('6.2发生时间')) else False
+            app_gt['Reward-Based Ads'] = {'video-level': Reward_Based_Ads}
+            Reward_Based_Ads_per_datapoint = []
+            if not unavailable_str(first_row.get('6.1通过观看广告获取利益') and not unavailable_str('6.2发生时间')):
+                Reward_Based_Ads_per_datapoint = extract_datapoints(first_row.get('6.2发生时间'))
+            app_gt['Reward-Based Ads']['instance-level'] = Reward_Based_Ads_per_datapoint
 
             # Ads = False if len(group) == 1 else True
             Ads_per_datapoint = []
@@ -345,7 +354,7 @@ def calculate_metrics_per_ui(available_ui, ground_truth, prediction):
                 if "Recheck Ad" not in further_check.keys():
                     for ad in further_check.values():
                         recheck_result = ad[ui_element]["Result"]
-                        if pred:
+                        if recheck_result:
                             pred.append({
                                 "start_timestamp": recheck_result["start_time"],
                                 "end_timestamp": recheck_result["end_time"],
@@ -396,6 +405,7 @@ def run_detect(client, video):
         result_timestamp = start_time = ad["start_timestamp"]
         end_time = ad["end_timestamp"]
         recheck_ads_time, ad_summarize, retriever_results = recheck_ads(client, video, start_time, end_time)
+        recheck_ads_time = recheck_ads(client, video, start_time, end_time)
         result_dict["Ad"]['Further Check'][result_timestamp] = {
             'Recheck Ad': {
                 'Parameter': [start_time, end_time],
@@ -432,6 +442,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', type=str, default='None')
+    parser.add_argument('-o', type=str, default='result.json')
     args = parser.parse_args()
 
     if args.c != "None":
@@ -485,11 +496,11 @@ if __name__ == "__main__":
                 if "broken_client" in result_dict_this_sample.keys() or "broken_file_upload" in result_dict_this_sample.keys():
                     print(f"Gemini cannot respond with this api on video {app_gt['video']}")
                     result_dict[local_path] = result_dict_this_sample
-                    dump_result_file("result.json", result_dict)
+                    dump_result_file(args.o, result_dict)
                     continue
 
                 result_dict[local_path] = result_dict_this_sample
-                dump_result_file("result.json", result_dict)
+                dump_result_file(args.o, result_dict)
 
     for video_path, result_dict_this_sample in result_dict.items():
         if video_path != "all-average-metrics":
@@ -502,4 +513,4 @@ if __name__ == "__main__":
                 per_ui_metrics = calculate_metrics_per_ui(available_ui, app_gt_clean, result_dict_this_sample)
                 result_dict_this_sample["per_ui_metrics"] = per_ui_metrics
 
-    dump_result_file("result.json", result_dict)
+    dump_result_file(args.o, result_dict)

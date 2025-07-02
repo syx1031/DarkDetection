@@ -9,6 +9,9 @@ import os
 import glob
 import json
 
+import torchvision
+from torchvision.models.detection import fasterrcnn_resnet50_fpn
+
 
 def extract_frame_ffmpeg(video_path, timestamp_sec):
     out, _ = (
@@ -141,6 +144,47 @@ def classify_video_frames_with_clip(video_path, frame_interval=3.0):
             continue
 
     return results
+
+
+class ContrastiveBannerDataset(torch.utils.data.Dataset):
+    def __init__(self, data, transform=None):
+        """
+        data: List of dicts with 'image', 'boxes', 'labels'
+        """
+        self.data = data
+        self.transform = transform or ToTensor()
+
+        self.pos_samples = [d for d in data if not "not" in d['image']]
+        self.neg_samples = [d for d in data if "not" in d['image']]
+
+    def __len__(self):
+        return len(self.pos_samples)
+
+    def __getitem__(self, idx):
+        anchor = self.pos_samples[idx]
+        pos = random.choice(self.pos_samples)
+        neg = random.choice(self.neg_samples)
+
+        def load_img(d):
+            img = Image.open(d['image']).convert('RGB')
+            return self.transform(img)
+
+        return {
+            'anchor': load_img(anchor),
+            'positive': load_img(pos),
+            'negative': load_img(neg),
+        }
+
+
+# 下载并加载 COCO 预训练模型
+model = fasterrcnn_resnet50_fpn(pretrained=True)
+
+# 修改类别数（假设你只检测 banner ad + background）
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+
+num_classes = 2  # 1 个 banner_ad 类 + 1 个背景
+in_features = model.roi_heads.box_predictor.cls_score.in_features
+model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
 
 # 示例调用

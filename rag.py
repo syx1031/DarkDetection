@@ -384,13 +384,7 @@ def generate_exemplars_parts(query_result):
     return parts
 
 
-if __name__ == "__main__":
-    # extract_key_frames("E:\\DarkDetection\\dataset\\syx\\us\\6447110104-尚宇轩.mp4", "00:33", "1:23")
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-c', type=str, default='None')
-    args = parser.parse_args()
-
+def generate_video_text_embedding_database(args):
     done_list = {}
 
     if args.c != "None":
@@ -417,7 +411,8 @@ if __name__ == "__main__":
 
     RESULT_LOCK = threading.Lock()
     with ThreadPoolExecutor(max_workers=10) as executor:
-        futures = {executor.submit(upload_file_and_generate_video_summarize, video, todo): video for video, todo in list_need_summary.items()}
+        futures = {executor.submit(upload_file_and_generate_video_summarize, video, todo): video for video, todo in
+                   list_need_summary.items()}
         for future in tqdm(as_completed(futures), total=len(futures)):
             video = futures[future]
             print(f'[End] Future on video {video} has done.')
@@ -442,7 +437,33 @@ if __name__ == "__main__":
                 done_list[video] = done_list_this_video
                 dump_result_file("rag_done_list.json", done_list)
 
+
+def generate_video_embedding_database(args):
+    todo_list = get_ad_list()
+
+    for video, info in todo_list.items():
+        for ad in info:
+            start_time = ad["start_time"]
+            end_time = ad["end_time"]
+            full_screen = ad["full_screen"]
+
+            if full_screen:
+
+
+
+if __name__ == "__main__":
+    # extract_key_frames("E:\\DarkDetection\\dataset\\syx\\us\\6447110104-尚宇轩.mp4", "00:33", "1:23")
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', type=str, default='None')
+    args = parser.parse_args()
+
+    # generate_video_text_embedding_database(args)
+
+    generate_video_embedding_database(args)
+
     # retriever = load_database()
     # query = "This video showcases a full-screen mobile ad for a Dominoes game.\n\n1.  **Initial Interface (03:53 - 03:54):** A black screen is displayed with an iOS timer in the top left, indicating a loading or waiting phase. This transitions automatically to reveal the ad banner.\n2.  **App Store Banner (03:54 - 03:55):** An App Store banner for \"Domino - Dominoes onlin...\" appears at the bottom of the black screen. This automatically leads to the main interactive ad content.\n3.  **Playable Dominoes Game (03:55 - 04:01):** The ad transitions to an interactive, playable demo of a multiplayer Dominoes game. The user actively participates by dragging and dropping domino tiles onto the board. The game progresses with turns taken by all players.\n4.  **Score Screen (04:01 - 04:02):** Upon completion of the game, a \"SCORE\" screen appears, displaying the points for each player. This automatically transitions to the game mode selection screen.\n5.  **Game Mode Selection (04:02 - 04:04):** An \"ONLINE GAME\" menu is shown, presenting options for different Dominoes game types such as \"DRAW GAME\" and \"ALL FIVES.\" The user then initiates closing the ad by swiping up the home indicator.\n6.  **App Minimized/Closed (04:04 - 04:05):** The ad (app) window minimizes to the iOS home screen view, and the user then swipes it away to fully close the application."
     # answer = retriever.invoke(query)
-    # pass
+
+

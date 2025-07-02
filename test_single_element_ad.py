@@ -169,10 +169,8 @@ def recheck_ads(client, video, start_time, end_time):
     prompt_rag_6 = []
     image_shot_6_1 = "E:\\DarkDetection\\Gemini2.5Pro\\local_database\\ad\\1607742297-a5-f1.jpg"
     prompt_rag_6.append({'img': open(image_shot_6_1, 'rb').read()})
-    prompt_rag_6 = []
     image_shot_6_2 = "E:\\DarkDetection\\Gemini2.5Pro\\local_database\\ad\\483922001-a5-f2.jpg"
     prompt_rag_6.append({'img': open(image_shot_6_2, 'rb').read()})
-    prompt_rag_6 = []
     image_shot_6_3 = "E:\\DarkDetection\\Gemini2.5Pro\\local_database\\ad\\1498061633-a5-f3.jpg"
     prompt_rag_6.append({'img': open(image_shot_6_3, 'rb').read()})
     prompt_rag_6.append({'text': '''
@@ -192,7 +190,8 @@ def recheck_ads(client, video, start_time, end_time):
     )
 
     # parts = generate_content([{"video": video_file.uri}] + prompt_recheck_ad + prompt_rag_1 + prompt_rag_2 + prompt_rag_3 + prompt_rag_4 + prompt_rag_5)
-    parts = generate_content([{"video": video_file.uri}] + prompt_recheck_ad)
+    # parts = generate_content([{"video": video_file.uri}] + prompt_recheck_ad)
+    parts = generate_content([{"video": video_file.uri}] + prompt_recheck_ad + prompt_rag_6)
 
     response = send_request(
         client=client,
@@ -240,9 +239,9 @@ if __name__ == "__main__":
         # "files/b85o7xx69ovz",
         # "files/49rx9nfujq5q",
         # "files/7tdb3hwgwpw0",
-        "files/lct27vlmws3d",
-        "changed",
-        "changed",
+        "files/uzzzu6uza0bx",
+        "files/t9ig2cv35ttd",
+        "files/it6j4uixf2b6",
     ]
 
     for i in range(len(video_local_paths)):
