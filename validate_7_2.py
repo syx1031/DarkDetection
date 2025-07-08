@@ -102,7 +102,7 @@ def get_ground_truth():
                 first_row.get('6.2发生时间')) else False
             app_gt['Reward-Based Ads'] = {'video-level': Reward_Based_Ads}
             Reward_Based_Ads_per_datapoint = []
-            if not unavailable_str(first_row.get('6.1通过观看广告获取利益') and not unavailable_str('6.2发生时间')):
+            if not unavailable_str(first_row.get('6.1通过观看广告获取利益')) and not unavailable_str(first_row.get('6.2发生时间')):
                 Reward_Based_Ads_per_datapoint = extract_datapoints(first_row.get('6.2发生时间'))
             app_gt['Reward-Based Ads']['instance-level'] = Reward_Based_Ads_per_datapoint
 
@@ -111,9 +111,9 @@ def get_ground_truth():
             for _, row in group.iterrows():
                 Auto_Redirect_Ads = Auto_Redirect_Ads or (True if not unavailable_str(row.get('5.1自动跳转的广告标记')) and not unavailable_str(row.get('5.2发生时间.1')) else False)
                 if not unavailable_str(row.get('5.2发生时间.1')):
-                    Auto_Redirect_Ads_per_datapoint.append(extract_datapoints(unavailable_str(row.get('5.2发生时间.1'))))
+                    Auto_Redirect_Ads_per_datapoint.extend(extract_datapoints(row.get('5.2发生时间.1')))
 
-            app_gt["Auto-Redirect Ads"]['video-level'] = Auto_Redirect_Ads
+            app_gt["Auto-Redirect Ads"] = {'video-level': Auto_Redirect_Ads}
             app_gt['Auto-Redirect Ads']['instance-level'] = Auto_Redirect_Ads_per_datapoint
 
             Ad_Closure_Failure = False
@@ -121,22 +121,20 @@ def get_ground_truth():
             for _, row in group.iterrows():
                 Ad_Closure_Failure = Ad_Closure_Failure or (True if not unavailable_str(row.get('4.2.1关不掉的广告标记')) and not unavailable_str(row.get('4.2.2发生时间.1')) else False)
                 if not unavailable_str(row.get('4.2.2发生时间.1')):
-                    Ad_Closure_Failure_per_datapoint.append(extract_datapoints(unavailable_str(row.get('4.2.2发生时间.1'))))
+                    Ad_Closure_Failure_per_datapoint.extend(extract_datapoints(row.get('4.2.2发生时间.1')))
 
-            app_gt["Ad Closure Failure"]['video-level'] = Ad_Closure_Failure
+            app_gt["Ad Closure Failure"] = {'video-level': Ad_Closure_Failure}
             app_gt['Ad Closure Failure']['instance-level'] = Ad_Closure_Failure_per_datapoint
 
             Gesture_Induced = False
             Gesture_Induced_per_datapoint = []
             for _, row in group.iterrows():
                 Gesture_Induced = Gesture_Induced or (
-                    True if not unavailable_str(row.get('3.1"摇一摇"广告标记')) and not unavailable_str(
-                        row.get('3.1.1发生时间')) else False)
+                    True if not unavailable_str(row.get('3.1"摇一摇"广告标记')) and not unavailable_str(row.get('3.1.1发生时间')) else False)
                 if not unavailable_str(row.get('3.1.1发生时间')):
-                    Gesture_Induced_per_datapoint.append(
-                        extract_datapoints(unavailable_str(row.get('3.1.1发生时间'))))
+                    Gesture_Induced_per_datapoint.extend(extract_datapoints(row.get('3.1.1发生时间')))
 
-            app_gt["Gesture-Induced Ad Redirection"]['video-level'] = Gesture_Induced
+            app_gt["Gesture-Induced Ad Redirection"] = {'video-level': Gesture_Induced}
             app_gt['Gesture-Induced Ad Redirection']['instance-level'] = Gesture_Induced_per_datapoint
 
             Multiple_Close_Buttons = False
@@ -144,9 +142,9 @@ def get_ground_truth():
             for _, row in group.iterrows():
                 Multiple_Close_Buttons = Multiple_Close_Buttons or (True if not unavailable_str(row.get('4.1关闭按钮设计糟糕的广告标记')) else False)
                 if not unavailable_str(row.get('4.1关闭按钮设计糟糕的广告标记')):
-                    Multiple_Close_Buttons_per_datapoint.append(extract_datapoints(row.get('2广告出现时间').split('-', 1)[0])[0])
+                    Multiple_Close_Buttons_per_datapoint.extend(extract_datapoints(row.get('2广告出现时间').split('-', 1)[0]))
 
-            app_gt["Multiple Close Buttons"]['video-level'] = Multiple_Close_Buttons
+            app_gt["Multiple Close Buttons"] = {'video-level': Multiple_Close_Buttons}
             app_gt["Multiple Close Buttons"]['instance-level'] = Multiple_Close_Buttons_per_datapoint
 
             Ad_Without_Exit_Option = False
@@ -155,7 +153,10 @@ def get_ground_truth():
                 Ad_Without_Exit_Option = Ad_Without_Exit_Option or (
                     True if not unavailable_str(row.get('4.4.1没有关闭按钮的广告标记')) and not unavailable_str(row.get('4.4.2发生时间')) else False)
                 if not unavailable_str(row.get('4.4.1没有关闭按钮的广告标记')) and not unavailable_str(row.get('4.4.2发生时间')):
-                    Ad_Without_Exit_Option_per_datapoint.append(extract_datapoints(row.get('4.4.2发生时间')))
+                    Ad_Without_Exit_Option_per_datapoint.extend(extract_datapoints(row.get('4.4.2发生时间')))
+
+            app_gt["Ad Without Exit Option"] = {'video-level': Ad_Without_Exit_Option}
+            app_gt["Ad Without Exit Option"]['instance-level'] = Ad_Without_Exit_Option_per_datapoint
 
             # Ads = False if len(group) == 1 else True
             Ads_per_datapoint = []
@@ -418,7 +419,7 @@ def dump_result_file(path, result_dict):
 if __name__ == "__main__":
     available_ui = ["Ad", "Recheck Ad"]
     available_dp = ["App Resumption Ads", "Unexpected Full-Screen Ads", "Paid Ad Removal", "Reward-Based Ads", "Auto-Redirect Ads",
-                    "Ad Closure Failure", "Gesture-Induced Ad Redirect", "Multiple Close Buttons", "Ad Without Exit Option"]
+                    "Ad Closure Failure", "Gesture-Induced Ad Redirection", "Multiple Close Buttons", "Ad Without Exit Option"]
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', type=str, default='None')
@@ -456,7 +457,7 @@ if __name__ == "__main__":
 
 
 
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=1) as executor:
         futures = {executor.submit(upload_file_and_run_detect, app_gt['video'], available_dp): key for key, app_gt in video_need_detect.items()}
         for future in tqdm(as_completed(futures), total=len(futures)):
             original_key = futures[future]

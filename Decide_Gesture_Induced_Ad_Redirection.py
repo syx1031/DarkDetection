@@ -4,9 +4,7 @@ from pydantic import BaseModel, Field
 from google.genai import types
 
 from utils import send_request
-from Bbox import Location
-from Point import PointLocation_Description
-from typing import Literal
+from Bbox import Location, Bbox_Description
 
 
 def Decide_Gesture_Induced(client, video, ad, shake_element):
@@ -26,10 +24,10 @@ def Decide_Gesture_Induced(client, video, ad, shake_element):
 
         def __init__(self, **data):
             # 手动调用验证器
-            data['timestamp'] = self.validate_timestamp(data['timestamp'])
+            # data['timestamp'] = self.validate_timestamp(data['timestamp'])
             super().__init__(**data)
 
-    GestureInducedList = [GestureInduced]
+    # GestureInducedList = list[GestureInduced]
 
     prompt_decide_gesture_induced = f'''
     Context:
@@ -42,7 +40,7 @@ def Decide_Gesture_Induced(client, video, ad, shake_element):
     Auxiliary information:
     1. You previously identified the following ad in the video:
     {ad}
-    2. You previously identified the following UI element suggesting users shake their phones in this ad:
+    2. You previously identified the following UI element suggesting users shake their phones in this ad. Note that {Bbox_Description}:
     {shake_element}
 
     Task: Based on the auxiliary information, analyze whether these UI elements in auxiliary information constitute the dark pattern "Gesture-Induced Ad Redirection" in the ad from {ad["start_time"]} to {ad["end_time"]}. Below are common UI element combinations associated with this pattern:
@@ -55,7 +53,7 @@ def Decide_Gesture_Induced(client, video, ad, shake_element):
             thinking_budget=24576,  # max thinking
         ),
         response_mime_type="application/json",
-        response_schema=GestureInducedList,
+        response_schema=GestureInduced,
     )
 
     content = [video, prompt_decide_gesture_induced]

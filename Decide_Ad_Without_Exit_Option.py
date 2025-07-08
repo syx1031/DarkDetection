@@ -23,7 +23,7 @@ def Decide_Ad_Without_Exit_Option(client, video, ad, close_button):
 
         def __init__(self, **data):
             # 手动调用验证器
-            data['timestamp'] = self.validate_timestamp(data['timestamp'])
+            # data['timestamp'] = self.validate_timestamp(data['timestamp'])
             super().__init__(**data)
 
     prompt_decide_ad_without_exit_option = f'''

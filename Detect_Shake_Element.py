@@ -25,7 +25,7 @@ def detect_shake_element_time_location(client, video, start_time=None, end_time=
 
         def __init__(self, **data):
             # 手动调用验证器
-            data['timestamp'] = self.validate_timestamp(data['timestamp'])
+            # data['timestamp'] = self.validate_timestamp(data['timestamp'])
             super().__init__(**data)
 
     ShakeElementList = list[ShakeElement]

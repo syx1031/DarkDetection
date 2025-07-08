@@ -447,8 +447,6 @@ def generate_video_embedding_database(args):
             end_time = ad["end_time"]
             full_screen = ad["full_screen"]
 
-            if full_screen:
-
 
 
 if __name__ == "__main__":

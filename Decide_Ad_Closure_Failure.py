@@ -15,7 +15,7 @@ def Decide_Ad_Closure_Failure(client, video, ad, close_button, click):
         ad_closure_failure: bool = Field(..., description="Whether 'Ad Closure Failure' appears or not. ")
         timestamp: str = Field(...,
                                description="The timestamp when the user clicks the close button, must in format 'mm:ss'.")
-        close_button_location: Location = Field(..., description="The location where the close button appears.")
+        close_button_location: Location = Field(..., description="The location where the close button clicked by the user appears.")
         manifestation: Literal["Multi-Step Ad Closure", "Closure Redirect Ads", "Forced Ad-Free Purchase Prompts", "Others"] = Field(..., description="Determine the specific manifestation of 'ad closure failure' based on what happens after the user clicks the close button, must in 'Multi-Step Ad Closure', 'Closure Redirect Ads', or 'Forced Ad-Free Purchase Prompts', or 'Others'.")
         thinking: str = Field(...,
                               description="Provide detailed reasoning about 'Ad Closure Failure'. If it is present, you must explain how the UI elements are combined to form the dark pattern.")
@@ -28,10 +28,10 @@ def Decide_Ad_Closure_Failure(client, video, ad, close_button, click):
 
         def __init__(self, **data):
             # 手动调用验证器
-            data['timestamp'] = self.validate_timestamp(data['timestamp'])
+            # data['timestamp'] = self.validate_timestamp(data['timestamp'])
             super().__init__(**data)
 
-    AdClosureFailureList = [AdClosureFailure]
+    AdClosureFailureList = list[AdClosureFailure]
 
     prompt_decide_ad_closure_failure = f'''
     Context:

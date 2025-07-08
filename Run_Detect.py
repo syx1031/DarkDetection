@@ -25,9 +25,6 @@ from Decide_Multiple_Close_Buttons import Decide_Multiple_Close_Buttons
 def run_detect(client, video, available_dp):
     result_dict = {"prediction": {}}
 
-    ads_time = detect_ads(client, video)
-    result_dict['Ad'] = {'Result': ads_time}
-
     result_dict["prediction"]["App Resumption Ads"] = {"video-level": False, 'instance-level': []}
     result_dict["prediction"]["Unexpected Full-Screen Ads"] = {"video-level": False, 'instance-level': []}
     result_dict["prediction"]["Reward-Based Ads"] = {"video-level": False, 'instance-level': []}
@@ -37,12 +34,14 @@ def run_detect(client, video, available_dp):
     result_dict["prediction"]["Ad Without Exit Option"] = {"video-level": False, 'instance-level': []}
     result_dict["prediction"]["Multiple Close Buttons"] = {"video-level": False, 'instance-level': []}
 
+    ads_time = detect_ads(client, video)
+    result_dict['Ad'] = {'Result': ads_time}
+
     result_dict['Ad']['Further Check'] = {}
     for ad in ads_time:
         result_timestamp = start_time = ad["start_timestamp"]
         end_time = ad["end_timestamp"]
         recheck_ads_time, ad_summarize, retriever_results = recheck_ads(client, video, start_time, end_time)
-        recheck_ads_time = recheck_ads(client, video, start_time, end_time)
         result_dict["Ad"]['Further Check'][result_timestamp] = {
             'Recheck Ad': {
                 'Parameter': [start_time, end_time],
@@ -106,7 +105,7 @@ def run_detect(client, video, available_dp):
                 result_dict["prediction"]["Unexpected Full-Screen Ads"]["video-level"] = True
                 result_dict["prediction"]["Unexpected Full-Screen Ads"]["instance-level"].append(Unexpected_Full_Screen_Ads["ad_start_time"])
 
-        if "Auto-Direct Ads" in available_dp:
+        if "Auto-Redirect Ads" in available_dp:
             start_time = recheck_ads_time["start_time"]
             end_time = recheck_ads_time["end_time"]
 
@@ -118,8 +117,8 @@ def run_detect(client, video, available_dp):
             })
 
             if landing_page_time["landing_page"]:
-                start_time = seconds_to_mmss(max(0, time_to_seconds(landing_page_time["timestamp"]) - 2))
-                end_time = landing_page_time["timestamp"]
+                start_time = seconds_to_mmss(max(time_to_seconds(start_time), time_to_seconds(landing_page_time["timestamp"]) - 2))
+                end_time = seconds_to_mmss(max(time_to_seconds(start_time) + 1, time_to_seconds(landing_page_time["timestamp"])))
                 click_time = detect_click_time_location(client, video, start_time, end_time)
                 result_dict["Ad"]["Further Check"][result_timestamp]["redirection"].update({
                     'click before redirection': click_time
@@ -151,20 +150,21 @@ def run_detect(client, video, available_dp):
                 'click': click_time_location
             })
 
-            Ad_Closure_Failure = Decide_Ad_Closure_Failure(client, video, recheck_ads_time, close_button_time_location, click_time_location)
+            Ad_Closure_Failures = Decide_Ad_Closure_Failure(client, video, recheck_ads_time, close_button_time_location, click_time_location)
             result_dict["Ad"]["Further Check"][result_timestamp]["closure failure"].update({
-                'Ad Closure Failure': Ad_Closure_Failure
+                'Ad Closure Failure': Ad_Closure_Failures
             })
 
-            if Ad_Closure_Failure["ad_closure_failure"]:
-                result_dict["prediction"]["Ad Closure Failure"]["video-level"] = True
-                result_dict["prediction"]["Ad Closure Failure"]["instance-level"].append(Ad_Closure_Failure["timestamp"])
+            for Ad_Closure_Failure in Ad_Closure_Failures:
+                if Ad_Closure_Failure["ad_closure_failure"]:
+                    result_dict["prediction"]["Ad Closure Failure"]["video-level"] = True
+                    result_dict["prediction"]["Ad Closure Failure"]["instance-level"].append(Ad_Closure_Failure["timestamp"])
 
         if "Gesture-Induced Ad Redirection" in available_dp:
             start_time = recheck_ads_time["start_time"]
             end_time = recheck_ads_time["end_time"]
             shake_element_time_location = detect_shake_element_time_location(client, video, start_time, end_time)
-            result_dict["Ad"]["Furcher Check"][result_timestamp].update({
+            result_dict["Ad"]["Further Check"][result_timestamp].update({
                 'gesture induced': {
                     'shake element': shake_element_time_location
                 }
@@ -226,8 +226,8 @@ def run_detect(client, video, available_dp):
 
 
 def upload_file_and_run_detect(video_local_path, available_dp):
-    client = get_client(local_path=video_local_path)
-
+    # client = get_client(local_path=video_local_path)
+    client = get_client(key='AIzaSyA-bxStNkKeadvr4bsd3cd1wBJCpCTrrzA')
     # try:
     #     video_file = upload_file(client, video_local_path)
     # except Exception as e:

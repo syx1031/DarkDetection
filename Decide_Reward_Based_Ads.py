@@ -28,7 +28,7 @@ def Decide_Reward_Based_Ads(client, video, watch_ad_element, reward_element):
             data['timestamp'] = self.validate_timestamp(data['timestamp'])
             super().__init__(**data)
 
-    RewardBasedAdsList = [RewardBasedAds]
+    RewardBasedAdsList = list[RewardBasedAds]
 
     prompt_decide_reward_based_ads = f'''
     Context:

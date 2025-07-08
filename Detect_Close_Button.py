@@ -25,10 +25,10 @@ def detect_close_button_time_location(client, video, start_time=None, end_time=N
 
         def __init__(self, **data):
             # 手动调用验证器
-            data['timestamp'] = self.validate_timestamp(data['timestamp'])
+            # data['timestamp'] = self.validate_timestamp(data['timestamp'])
             super().__init__(**data)
 
-    CloseButtonList = list(CloseButton)
+    CloseButtonList = list[CloseButton]
 
     prompt_detect_close_button = f'''
         Context: 
