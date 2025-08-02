@@ -27,21 +27,23 @@ def Decide_Multiple_Close_Buttons(client, video, ad, close_button):
             super().__init__(**data)
 
     prompt_decide_multiple_cloase_buttons = f'''
-    Context:
-    1. Video: This is a clip of screen recording of a user interacting with an app on an iPhone after connecting a mouse.
-        a. The persistent red-bordered circle represents the current position of the cursor. 
-        b. When the size of the red circle contracts and its center turns black, it indicates that the user is clicking the screen.
-        c. Since this is a screen recording, all visible content—except for cursor represented by red circle—reflects what is displayed on the screen rather than any content out of the iPhone's screen.
-    2. Multiple Close Buttons: Some ads display multiple close buttons simultaneously, making it difficult for users to choose the correct one.
+    Context: 
+        1. You will be analyzing a video segment based on the following information:
+            a. Video Source: The video is a screen recording of a user interacting with an iPhone app, with a mouse connected.
+            b. Cursor Representation: A persistent red-bordered circle on the screen represents the mouse cursor's position.
+            c. Click Indication: A click is indicated when the cursor translates from a red circle to a yellow square.
+        2. Definition of "Multiple Close Buttons": An ad displays two or more close buttons simultaneously, making it difficult for users to choose the correct one.
 
     Auxiliary information:
-    1. You previously identified the following ad in the video:
-    {ad}
-    2. You previously identified the following ad close buttons in the ad. Note that {Bbox_Description}:
-    {close_button}
+        1. You previously identified the following ad in the video:
+        {ad}
+        2. You previously identified the following ad close buttons in the ad. Note that {Bbox_Description}:
+        {close_button}
 
-    Task: Based on the auxiliary information, analyze whether these UI elements in auxiliary information constitute the dark pattern "Multiple Close Buttons" in the ad from {ad["start_time"]} to {ad["end_time"]}. Below are common UI element combinations associated with this pattern:
-    1. Two or more close buttons appear simultaneously at any point during the ad playback.
+    Task: Based on the auxiliary information, analyze whether these UI elements in auxiliary information constitute the dark pattern "Multiple Close Buttons" in the ad from {ad["start_time"]} to {ad["end_time"]}.
+    
+    Output: If "Multiple Close Buttons" occurs, provide the following details:
+        - 'timestamp': The timestamp "mm:ss" when multiple close buttons appear.
     '''
 
     config = types.GenerateContentConfig(

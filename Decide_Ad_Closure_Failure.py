@@ -16,7 +16,7 @@ def Decide_Ad_Closure_Failure(client, video, ad, close_button, click):
         timestamp: str = Field(...,
                                description="The timestamp when the user clicks the close button, must in format 'mm:ss'.")
         close_button_location: Location = Field(..., description="The location where the close button clicked by the user appears.")
-        manifestation: Literal["Multi-Step Ad Closure", "Closure Redirect Ads", "Forced Ad-Free Purchase Prompts", "Others"] = Field(..., description="Determine the specific manifestation of 'ad closure failure' based on what happens after the user clicks the close button, must in 'Multi-Step Ad Closure', 'Closure Redirect Ads', or 'Forced Ad-Free Purchase Prompts', or 'Others'.")
+        # manifestation: Literal["Multi-Step Ad Closure", "Closure Redirect Ads", "Forced Ad-Free Purchase Prompts", "Others"] = Field(..., description="Determine the specific manifestation of 'ad closure failure' based on what happens after the user clicks the close button, must in 'Multi-Step Ad Closure', 'Closure Redirect Ads', or 'Forced Ad-Free Purchase Prompts', or 'Others'.")
         thinking: str = Field(...,
                               description="Provide detailed reasoning about 'Ad Closure Failure'. If it is present, you must explain how the UI elements are combined to form the dark pattern.")
 
@@ -33,29 +33,57 @@ def Decide_Ad_Closure_Failure(client, video, ad, close_button, click):
 
     AdClosureFailureList = list[AdClosureFailure]
 
-    prompt_decide_ad_closure_failure = f'''
-    Context:
-    1. Video: This is a clip of screen recording of a user interacting with an app on an iPhone after connecting a mouse.
-        a. The persistent red-bordered circle represents the current position of the cursor. 
-        b. When the size of the red circle contracts and its center turns black, it indicates that the user is clicking the screen.
-        c. Since this is a screen recording, all visible content—except for cursor represented by red circle—reflects what is displayed on the screen rather than any content out of the iPhone's screen.
-    2. Ad Closure Failure: After clicking the close button, an ad may fail to close as expected. There are several more detailed manifestations:
-        a. "Multi-Step Ad Closure": requires users to complete multiple dismissal actions, as the initial close button click merely redirects to another advertisement page.
-        b. "Closure Redirect Ads":  immediately direct users to promotional landing pages, typically app store destinations, upon closure attempts.
-        c. "Forced Ad-Free Purchase Prompts": present subscription offers immediately after ad dismissal, effectively transforming the closure action into a monetization opportunity. 
+    # prompt_decide_ad_closure_failure = f'''
+    # Context:
+    # 1. Video: This is a clip of screen recording of a user interacting with an app on an iPhone after connecting a mouse.
+    #     a. The persistent red-bordered circle represents the current position of the cursor.
+    #     b. When the size of the red circle contracts and its center turns black, it indicates that the user is clicking the screen.
+    #     c. Since this is a screen recording, all visible content—except for cursor represented by red circle—reflects what is displayed on the screen rather than any content out of the iPhone's screen.
+    # 2. Ad Closure Failure: After clicking the close button, an ad may fail to close as expected. There are several more detailed manifestations:
+    #     a. "Multi-Step Ad Closure": requires users to complete multiple dismissal actions, as the initial close button click merely redirects to another advertisement page.
+    #     b. "Closure Redirect Ads":  immediately direct users to promotional landing pages, typically app store destinations, upon closure attempts.
+    #     c. "Forced Ad-Free Purchase Prompts": present subscription offers immediately after ad dismissal, effectively transforming the closure action into a monetization opportunity.
+    #
+    # Auxiliary information:
+    # 1. You previously identified the following ad in the video:
+    # {ad}
+    # 2. You previously identified the following ad close buttons in the ad. Note that {Bbox_Description}
+    # {close_button}
+    # 3. You previously identified the following clicks by the user. Note that {PointLocation_Description}:
+    # {click}
+    #
+    # Task: Based on the auxiliary information, analyze whether these UI elements in auxiliary information constitute the dark pattern "Ad Closure Failure" in the ad from {ad["start_time"]} to {ad["end_time"]}. Below are common UI element combinations associated with this pattern:
+    # 1. In the "ad", the user "click" the "close button". However, the "ad" did not close and instead displayed another interface. (Multi-Step Ad Closure)
+    # 2. In the "ad", the user "click" the "close button". However, the "ad" redirects to the landing page. (Closure Redirect Ads)
+    # 3. In the "ad", the user "click" the "close button". However, the app displayed an interface requiring the user to pay in order to close the ad. (Forced Ad-Free Purchase Prompts)
+    # '''
 
+    prompt_decide_ad_closure_failure = f'''
+    Context: 
+        1. You will be analyzing a video segment based on the following information:
+            a. Video Source: The video is a screen recording of a user interacting with an iPhone app, with a mouse connected.
+            b. Cursor Representation: A persistent red-bordered circle on the screen represents the mouse cursor's position.
+            c. Click Indication: A click is indicated when the cursor translates from a red circle to a yellow square.
+        2. Definition of an "Ad Closure Failure": An "Ad Closure Failure" occurs when the user's attempt to close an ad by clicking a designated close button does not result in the ad being dismissed as expected. Instead, it leads to an unwanted outcome of any one of the following:
+            2.1. The app redirects the user to an external landing page, the App Store, or another website, treating the close button as a standard ad click.
+            2.2. A new interface appears, such as another ad interface, a confirmation prompt (e.g., "Are you sure you want to close?"), or a screen that forces the user to wait for another timer.
+            2.3. A prompt appears urging the user to pay for a premium or ad-free version of the app.
+            2.4. The ad fails to react in any way, remaining on the screen as if the button were fake or non-functional.
+            2.5. The main ad view is dismissed, but a smaller, persistent ad element (like a floating icon or a sticky banner) is left behind on the screen, continuing the intrusion.
+        
     Auxiliary information:
-    1. You previously identified the following ad in the video:
-    {ad}
-    2. You previously identified the following ad close buttons in the ad. Note that {Bbox_Description}
-    {close_button}
-    3. You previously identified the following clicks by the user. Note that {PointLocation_Description}:
-    {click}
+        1. You previously identified the following ad in the video:
+        {ad}
+        2. You previously identified the following ad close buttons in the ad. Note that {Bbox_Description}
+        {close_button}
+        3. You previously identified the following clicks by the user. Note that {PointLocation_Description}:
+        {click}
     
-    Task: Based on the auxiliary information, analyze whether these UI elements in auxiliary information constitute the dark pattern "Ad Closure Failure" in the ad from {ad["start_time"]} to {ad["end_time"]}. Below are common UI element combinations associated with this pattern:
-    1. In the "ad", the user "click" the "close button". However, the "ad" did not close and instead displayed another interface. (Multi-Step Ad Closure)
-    2. In the "ad", the user "click" the "close button". However, the "ad" redirects to the landing page. (Closure Redirect Ads)
-    3. In the "ad", the user "click" the "close button". However, the app displayed an interface requiring the user to pay in order to close the ad. (Forced Ad-Free Purchase Prompts)
+    Task: Based on the auxiliary information, analyze whether these UI elements in auxiliary information constitute the dark pattern "Ad Closure Failure" in the ad from {ad["start_time"]} to {ad["end_time"]}.
+    
+    Output: If "Ad Closure Failure" occurs, provide the following details:
+        - 'timestamp': The timestamp "mm:ss" when the close button clicked by the user appears.
+        - 'close_button_location': The location where the close button clicked by the user appears. You can copy it from Auxiliary information 2.
     '''
 
     config = types.GenerateContentConfig(

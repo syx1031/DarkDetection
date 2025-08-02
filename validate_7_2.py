@@ -10,6 +10,7 @@ import networkx as nx
 import re
 import json
 import traceback
+from collections import defaultdict
 
 from utils import time_to_seconds, seconds_to_mmss
 from Run_Detect import upload_file_and_run_detect
@@ -44,7 +45,7 @@ def get_ground_truth():
     # get videos and ground truth
     ground_truth = {}
 
-    gt_videos = "E:\\DarkDetection\\dataset\\syx\\us"
+    gt_videos = "E:\\DarkDetection\\dataset\\syx\\frameid\\us"
     gt_file = "E:\\DarkDetection\\dataset\\syx\\ground_truth_syx_us.xlsx"
     # 读取 Excel 文件（默认读取第一张表）
     gt_df = pd.read_excel(gt_file)
@@ -59,8 +60,8 @@ def get_ground_truth():
 
         # 外层处理：第一行
         first_row = group.iloc[0]
-        if first_row.get('能否测试') == '可测试' and glob.glob(os.path.join(gt_videos, f'{uid}*')):
-            app_gt = {'video': glob.glob(os.path.join(gt_videos, f'{uid}*'))[0]}
+        if first_row.get('能否测试') == '可测试' and glob.glob(os.path.join(gt_videos, f'*{uid}*')):
+            app_gt = {'video': glob.glob(os.path.join(gt_videos, f'*{uid}*'))[0]}
 
             Home_Resumption_Ads = True if not unavailable_str(
                 first_row.get('1.1.1home indicator广告标记')) and not unavailable_str(
@@ -298,6 +299,12 @@ def calculate_metrics_on_one_sample(available_dp, ground_truth, prediction):
     metrics = {}
     for key, value in ground_truth.items():
         if key in available_dp:
+
+
+            # if key == "Reward-Based Ads" and prediction['Reward-Based Ads']['instance-level']:
+            #     prediction['Reward-Based Ads']['instance-level'] = [prediction['Reward-Based Ads']['instance-level']]
+
+
             all_times_str, gt_label, pred_label, match_strs = max_matching(prediction[key]['instance-level'], value['instance-level'])
 
             p = precision_score(gt_label, pred_label, zero_division=0)
@@ -411,6 +418,110 @@ def calculate_metrics_per_ui(available_ui, ground_truth, prediction):
     return metrics
 
 
+def calculate_metrics_on_all_sample(available_dp, result_dict):
+    all_average_metrics = {}
+
+    # 用于记录所有DP的gt和pred
+    video_gt_by_dp = defaultdict(list)
+    video_pred_by_dp = defaultdict(list)
+    instance_gt_by_dp = defaultdict(list)
+    instance_pred_by_dp = defaultdict(list)
+
+    # 收集数据
+    for result_dict_one_sample in result_dict.values():
+        if 'metrics' in result_dict_one_sample.keys():
+            app_metric = result_dict_one_sample["metrics"]
+            for dp, dp_metric in app_metric.items():
+                if dp in available_dp:
+                    # video-level
+                    video_gt_by_dp[dp].append(dp_metric["video-level"]["ground_truth"])
+                    video_pred_by_dp[dp].append(dp_metric["video-level"]["prediction"])
+
+                    # instance-level
+                    instance_gt_by_dp[dp].extend(dp_metric["instance-level"]["ground_truth"])
+                    instance_pred_by_dp[dp].extend(dp_metric["instance-level"]["prediction"])
+
+    macro_video_precs, macro_video_recalls, macro_video_f1s = [], [], []
+    macro_inst_precs, macro_inst_recalls, macro_inst_f1s = [], [], []
+
+    all_average_metrics["per dp"] = {}
+
+    for dp in video_gt_by_dp:
+        # video-level metrics per DP
+        p = precision_score(video_gt_by_dp[dp], video_pred_by_dp[dp], zero_division=0)
+        r = recall_score(video_gt_by_dp[dp], video_pred_by_dp[dp], zero_division=0)
+        f1 = f1_score(video_gt_by_dp[dp], video_pred_by_dp[dp], zero_division=0)
+        macro_video_precs.append(p)
+        macro_video_recalls.append(r)
+        macro_video_f1s.append(f1)
+        video_level = {
+            'precision': p,
+            'recall': r,
+            'f1-score': f1,
+        }
+
+        # instance-level metrics per DP
+        p = precision_score(instance_gt_by_dp[dp], instance_pred_by_dp[dp], zero_division=0)
+        r = recall_score(instance_gt_by_dp[dp], instance_pred_by_dp[dp], zero_division=0)
+        f1 = f1_score(instance_gt_by_dp[dp], instance_pred_by_dp[dp], zero_division=0)
+        macro_inst_precs.append(p)
+        macro_inst_recalls.append(r)
+        macro_inst_f1s.append(f1)
+        instance_level = {
+            'precision': p,
+            'recall': r,
+            'f1-score': f1,
+        }
+
+        all_average_metrics["per dp"][dp] = {
+            'video-level': video_level,
+            'instance-level': instance_level,
+        }
+
+    # === 宏平均（每个DP上分别算后取平均） ===
+    macro_video_metrics = {
+        "precision": sum(macro_video_precs) / len(macro_video_precs),
+        "recall": sum(macro_video_recalls) / len(macro_video_recalls),
+        "f1": sum(macro_video_f1s) / len(macro_video_f1s)
+    }
+
+    macro_instance_metrics = {
+        "precision": sum(macro_inst_precs) / len(macro_inst_precs),
+        "recall": sum(macro_inst_recalls) / len(macro_inst_recalls),
+        "f1": sum(macro_inst_f1s) / len(macro_inst_f1s)
+    }
+
+    all_average_metrics["macro"] = {
+        'video-level': macro_video_metrics,
+        'instance-level': macro_instance_metrics,
+    }
+
+    # 合并所有DP数据
+    video_gt_all = sum(video_gt_by_dp.values(), [])
+    video_pred_all = sum(video_pred_by_dp.values(), [])
+    instance_gt_all = sum(instance_gt_by_dp.values(), [])
+    instance_pred_all = sum(instance_pred_by_dp.values(), [])
+
+    micro_video_metrics = {
+        "precision": precision_score(video_gt_all, video_pred_all, zero_division=0),
+        "recall": recall_score(video_gt_all, video_pred_all, zero_division=0),
+        "f1": f1_score(video_gt_all, video_pred_all, zero_division=0)
+    }
+
+    micro_instance_metrics = {
+        "precision": precision_score(instance_gt_all, instance_pred_all, zero_division=0),
+        "recall": recall_score(instance_gt_all, instance_pred_all, zero_division=0),
+        "f1": f1_score(instance_gt_all, instance_pred_all, zero_division=0)
+    }
+
+    all_average_metrics["micro"] = {
+        'video-level': micro_video_metrics,
+        'instance-level': micro_instance_metrics,
+    }
+
+    return all_average_metrics
+
+
 def dump_result_file(path, result_dict):
     with open(path, "w") as f:
         json.dump(result_dict, f, indent=4)
@@ -418,11 +529,13 @@ def dump_result_file(path, result_dict):
 
 if __name__ == "__main__":
     available_ui = ["Ad", "Recheck Ad"]
-    available_dp = ["App Resumption Ads", "Unexpected Full-Screen Ads", "Paid Ad Removal", "Reward-Based Ads", "Auto-Redirect Ads",
-                    "Ad Closure Failure", "Gesture-Induced Ad Redirection", "Multiple Close Buttons", "Ad Without Exit Option"]
+    # available_dp = ["App Resumption Ads", "Unexpected Full-Screen Ads", "Paid Ad Removal", "Reward-Based Ads", "Auto-Redirect Ads",
+    #                 "Ad Closure Failure", "Gesture-Induced Ad Redirection", "Multiple Close Buttons", "Ad Without Exit Option"]
+    available_dp = ["App Resumption Ads", "Unexpected Full-Screen Ads"]
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', type=str, default='None')
+    parser.add_argument('--wr', action="store_true")
     parser.add_argument('-o', type=str, default='result.json')
     args = parser.parse_args()
 
@@ -456,32 +569,32 @@ if __name__ == "__main__":
     #         video_need_detect.pop(uid)
 
 
+    if not args.wr:
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = {executor.submit(upload_file_and_run_detect, app_gt['video'], available_dp): key for key, app_gt in video_need_detect.items()}
+            for future in tqdm(as_completed(futures), total=len(futures)):
+                original_key = futures[future]
+                app_gt = video_need_detect[original_key]
+                local_path = app_gt["video"]
 
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        futures = {executor.submit(upload_file_and_run_detect, app_gt['video'], available_dp): key for key, app_gt in video_need_detect.items()}
-        for future in tqdm(as_completed(futures), total=len(futures)):
-            original_key = futures[future]
-            app_gt = video_need_detect[original_key]
-            local_path = app_gt["video"]
-
-            try:
-                result_dict_this_sample = future.result()
-            except Exception as e:
-                print(f"[Error] Future failed on video {local_path}: {e}")
-                traceback.print_exc()
-                with RESULT_LOCK:
-                    result_dict[local_path] = {"crashed_future": True, "error_info": traceback.format_exc()}
-                continue
-
-            with RESULT_LOCK:
-                if "broken_client" in result_dict_this_sample.keys() or "broken_file_upload" in result_dict_this_sample.keys():
-                    print(f"Gemini cannot respond with this api on video {app_gt['video']}")
-                    result_dict[local_path] = result_dict_this_sample
-                    dump_result_file(args.o, result_dict)
+                try:
+                    result_dict_this_sample = future.result()
+                except Exception as e:
+                    print(f"[Error] Future failed on video {local_path}: {e}")
+                    traceback.print_exc()
+                    with RESULT_LOCK:
+                        result_dict[local_path] = {"crashed_future": True, "error_info": traceback.format_exc()}
                     continue
 
-                result_dict[local_path] = result_dict_this_sample
-                dump_result_file(args.o, result_dict)
+                with RESULT_LOCK:
+                    if "broken_client" in result_dict_this_sample.keys() or "broken_file_upload" in result_dict_this_sample.keys():
+                        print(f"Gemini cannot respond with this api on video {app_gt['video']}")
+                        result_dict[local_path] = result_dict_this_sample
+                        dump_result_file(args.o, result_dict)
+                        continue
+
+                    result_dict[local_path] = result_dict_this_sample
+                    dump_result_file(args.o, result_dict)
 
     for video_path, result_dict_this_sample in result_dict.items():
         if video_path != "all-average-metrics":
@@ -496,5 +609,7 @@ if __name__ == "__main__":
 
                 per_ui_metrics = calculate_metrics_per_ui(available_ui, app_gt_clean, result_dict_this_sample)
                 result_dict_this_sample["per_ui_metrics"] = per_ui_metrics
+
+    result_dict["all-average-metrics"] = calculate_metrics_on_all_sample(available_dp, result_dict)
 
     dump_result_file(args.o, result_dict)

@@ -70,9 +70,24 @@ PAID_KEYS = [
     "AIzaSyDNYdjTbR2MYpnkOE6I2L8SrkBK4be2ndg"
 ]
 
+# 按照推荐使用的顺序从上到下排列
+MODEL_LIST = [
+    "models/gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "models/gemini-2.5-flash-lite-preview-06-17",
+    # "models/gemini-2.0-flash", 不支持思考
+]
+
+# MODEL_CODE = {
+#     "gemini-2.5-pro": "gemini-2.5-pro",
+#     "gemini-2.5-flash": "models/gemini-2.5-flash",
+#     "gemini-2.5-flash-lite-preview-06-17": "models/gemini-2.5-flash-lite-preview-06-17",
+#     "gemini-2.0-flash": "models/gemini-2.0-flash"
+# }
+
 # Configure the client and tools
-FREE_API_KEYS = {key: {'client': genai.Client(api_key=key, http_options={'timeout': 600000}), 'status': True, 'uploads': {}, 'timer': None, 'lock': threading.Lock()} for key in FREE_KEYS}
-PAID_API_KEYS = {key: {'client': genai.Client(api_key=key, http_options={'timeout': 600000}), 'status': True, 'uploads': {}, 'timer': None, 'lock': threading.Lock()} for key in PAID_KEYS}
+FREE_API_KEYS = {key: {'client': genai.Client(api_key=key, http_options={'timeout': 600000}), 'available_model': {model: True for model in MODEL_LIST}, 'status': True, 'uploads': {}, 'timer': None, 'lock': threading.Lock()} for key in FREE_KEYS}
+PAID_API_KEYS = {key: {'client': genai.Client(api_key=key, http_options={'timeout': 600000}), 'available_model': {model: True for model in MODEL_LIST}, 'status': True, 'uploads': {}, 'timer': None, 'lock': threading.Lock()} for key in PAID_KEYS}
 ALL_API_KEYS = FREE_API_KEYS | PAID_API_KEYS
 
 STATUS_LOCK = threading.Lock()
@@ -159,11 +174,17 @@ def upload_file(client, local_path):
             json.dump(upload_videos, f, indent=4)
 
     # Poll until the video file is completely processed (state becomes ACTIVE).
+    try_count = 0
     while not video_file.state or video_file.state.name != "ACTIVE":
         # print("Processing video...")
         # print("File state:", video_file.state)
         time.sleep(5)
-        video_file = client.files.get(name=video_file.name)
+        try:
+            video_file = client.files.get(name=video_file.name)
+        except Exception as e:
+            try_count += 1
+            if try_count >= 10:
+                raise
 
     return video_file
 
@@ -174,25 +195,52 @@ def restore_key(key):
         print(f"[{time.strftime('%H:%M:%S')}] API {key} is now restored.")
 
 
-def feedback(key):
+def feedback(key, model):
     with STATUS_LOCK:
-        """标记某个 key 为不可用，并设置 10 分钟后恢复"""
         if key in FREE_KEYS:
-            FREE_API_KEYS[key]["status"] = False
-            print(f"[{time.strftime('%H:%M:%S')}] API {key} marked as over quota.")
+            FREE_API_KEYS[key]["available_model"][model] = False
 
-            # 如果已有恢复定时器在运行就不重复设置
-            if FREE_API_KEYS[key]['timer'].is_alive():
-                return
+            if all(model_status is False for model_status in FREE_API_KEYS[key]["available_model"].values()):
+                FREE_API_KEYS[key]["status"] = False
+                print(f"[{time.strftime('%H:%M:%S')}] API {key} marked as over quota.")
 
-            timer = threading.Timer(90000, restore_key, args=[key])
-            FREE_API_KEYS[key][timer] = timer
-            timer.start()
+            # # 如果已有恢复定时器在运行就不重复设置
+            # if FREE_API_KEYS[key]['timer'] and FREE_API_KEYS[key]['timer'].is_alive():
+            #     return
+            #
+            # timer = threading.Timer(90000, restore_key, args=[key])
+            # FREE_API_KEYS[key][timer] = timer
+            # timer.start()
         else:
             print('Paid api may be over quota.')
 
 
-def send_request(client, model, contents, config):
+def out_of_quota(key, model):
+    with STATUS_LOCK:
+        if key in FREE_KEYS:
+            return not FREE_API_KEYS[key]["available_model"][model]
+        else:
+            return False
+
+
+def get_available_model(key):
+    with STATUS_LOCK:
+        if key in FREE_KEYS:
+            for model in MODEL_LIST:
+                if FREE_API_KEYS[key]["available_model"][model]:
+                    return model
+            return None
+        else:
+            return MODEL_LIST[0]
+
+
+def send_request(client, model, contents, config, retry_sec=120):
+    if model not in MODEL_LIST:
+        model = MODEL_LIST[0]
+
+    if out_of_quota(get_key_from_client(client), model):
+        model = get_available_model(get_key_from_client(client))
+
     try_counter = 0
     while True:
         try:
@@ -202,17 +250,33 @@ def send_request(client, model, contents, config):
                 contents=contents,
                 config=config,
             )
-            if not response or not response.text:
-                print(f"Response is None from {get_key_from_client(client)}.")
-                response = SimpleNamespace(text="[]")
-            break
+            # if not response or not response.text:
+            #     print(f"Response is None from {get_key_from_client(client)}.")
+            #     response = SimpleNamespace(text="[]")
+            if response and response.text:
+                break
         except Exception as e:
             print(f'Request failed: {get_key_from_client(client)}, try again after several minutes. Detail: {e}')
+
+            if hasattr(e, 'code') and e.code == 500:
+                pass
+            elif hasattr(e, 'code') and e.code == 429:
+                try:
+                    if e.details['error']['details'][0]['violations'][0]['quotaId'] == "GenerateRequestsPerDayPerProjectPerModel-FreeTier":
+                        feedback(get_key_from_client(client), model)
+                        model = get_available_model(client)
+                        if not model:
+                            raise
+                        try_counter = 0
+                    # elif e.details['error']['details'][0]['violations'][0]['quotaId'] == "GenerateContentInputTokensPerModelPerMinute-FreeTier":
+                except Exception as e_again:
+                    pass
+
             try_counter += 1
             if try_counter >= 10:
-                feedback(get_key_from_client(client))
+                # feedback(get_key_from_client(client))
                 raise
-            time.sleep(120)
+            time.sleep(retry_sec)
 
     return response
 
